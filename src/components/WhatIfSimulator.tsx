@@ -168,9 +168,9 @@ export const WhatIfSimulator: React.FC = () => {
             </label>
             <input
               type="number"
-              min={10}
+              min={1}
               max={10000}
-              step={50}
+              step="any"
               value={amount}
               onChange={(e) => setAmount(Number(e.target.value))}
               className="w-full px-3.5 py-2.5 rounded-xl text-sm font-extrabold focus:outline-none focus:ring-2 min-w-0"

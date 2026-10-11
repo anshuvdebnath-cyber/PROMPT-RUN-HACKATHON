@@ -169,7 +169,7 @@ export const ExpenseLedger: React.FC = () => {
                   type="number"
                   required
                   min={1}
-                  step={5}
+                  step="any"
                   placeholder="e.g. 120"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}

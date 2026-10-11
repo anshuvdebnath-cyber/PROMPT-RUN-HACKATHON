@@ -201,7 +201,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({ isOpen, on
                     required
                     min={1}
                     max={10000}
-                    step={5}
+                    step="any"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value === '' ? '' : Number(e.target.value))}
                     className="w-full pl-7 pr-3 py-2.5 rounded-xl text-xs font-extrabold bg-white border border-black/10 focus:outline-none focus:ring-2 focus:ring-zinc-900 shadow-2xs"
@@ -223,6 +223,18 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({ isOpen, on
                   +₹{delta}
                 </button>
               ))}
+              <button
+                type="button"
+                onClick={() => {
+                  const randomNumbers = [45, 85, 120, 240, 390, 540, 780, 1290, 1450, 1850]
+                  const pick = randomNumbers[Math.floor(Math.random() * randomNumbers.length)]
+                  setAmount(pick)
+                }}
+                className="px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-[11px] font-extrabold text-amber-900 transition-colors cursor-pointer flex items-center gap-1 shadow-2xs"
+                title="Pick random realistic amount"
+              >
+                🎲 Random ₹
+              </button>
             </div>
 
             {/* Category & Day Selection */}

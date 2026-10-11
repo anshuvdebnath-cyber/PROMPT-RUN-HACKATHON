@@ -39,7 +39,10 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
 
 body {
   background: var(--canvas);
@@ -48,9 +51,11 @@ body {
   font-size: 14.5px;
   line-height: 1.6;
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
 h1, h2, h3, h4, .font-display {

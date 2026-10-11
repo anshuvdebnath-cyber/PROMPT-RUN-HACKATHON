@@ -283,9 +283,9 @@ export const ExpenseLedger: React.FC = () => {
               key={tx.id}
               className="py-3.5 flex items-center justify-between gap-3 group hover:bg-[#FAF7F2]/50 px-2 rounded-xl transition-colors"
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow-2xs ${
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow-2xs shrink-0 ${
                     tx.type === 'expense'
                       ? 'bg-rose-100 text-rose-800'
                       : 'bg-emerald-100 text-emerald-800'
@@ -297,12 +297,12 @@ export const ExpenseLedger: React.FC = () => {
                     <ArrowUpRight size={14} />
                   )}
                 </div>
-                <div>
-                  <h5 className="text-xs sm:text-sm font-extrabold text-zinc-900">
+                <div className="min-w-0 flex-1">
+                  <h5 className="text-xs sm:text-sm font-extrabold text-zinc-900 truncate max-w-[130px] min-[400px]:max-w-[200px] sm:max-w-none">
                     {tx.title}
                   </h5>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-[10px] font-bold text-zinc-400">
+                    <span className="text-[10px] font-bold text-zinc-400 truncate max-w-[140px] min-[400px]:max-w-[200px] sm:max-w-none">
                       Day {tx.day} {tx.day === currentDay ? '· Today' : ''} · {tx.category}
                     </span>
                   </div>

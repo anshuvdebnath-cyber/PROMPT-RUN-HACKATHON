@@ -90,7 +90,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({ isOpen, on
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 16 }}
           transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="bg-white rounded-[28px] sm:rounded-[32px] p-5 sm:p-7 max-w-lg w-full border border-black/10 shadow-2xl relative my-auto min-w-0"
+          className="bg-white rounded-[26px] sm:rounded-[32px] p-4.5 sm:p-7 max-w-lg w-full border border-black/10 shadow-2xl relative my-auto min-w-0 max-h-[92vh] overflow-y-auto no-scrollbar"
           style={{ background: 'var(--canvas-card)' }}
           onClick={(e) => e.stopPropagation()}
         >

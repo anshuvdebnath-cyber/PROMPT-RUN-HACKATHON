@@ -254,7 +254,7 @@ function TopDayBar({ onOpenExpenseModal }: { onOpenExpenseModal: () => void }) {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as TransactionCategory)}
-                className="text-[11px] font-bold py-0.5 px-2 rounded-lg bg-white border border-black/10 text-zinc-700 focus:outline-none cursor-pointer"
+                className="text-[11px] font-bold py-0.5 px-2 rounded-lg bg-white border border-black/10 text-zinc-700 focus:outline-none cursor-pointer max-w-[120px] sm:max-w-none truncate"
               >
                 <option value="Food & Dining">Food & Dining</option>
                 <option value="Transport & Commute">Transport & Commute</option>
@@ -290,24 +290,24 @@ function TopDayBar({ onOpenExpenseModal }: { onOpenExpenseModal: () => void }) {
         </div>
 
         {/* Note input & Log button */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
           <input
             type="text"
             placeholder="Note (e.g. Lunch)"
             aria-label="Expense note"
             value={itemNote}
             onChange={(e) => setItemNote(e.target.value)}
-            className="w-24 sm:w-28 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-black/10 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+            className="flex-1 sm:w-28 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-black/10 focus:outline-none focus:ring-1 focus:ring-zinc-900 min-w-0"
           />
           <button
             onClick={handleRecordSliderSpend}
-            className="px-3.5 py-1.5 rounded-xl font-extrabold text-xs text-white bg-zinc-900 hover:bg-zinc-800 shadow-2xs transition-transform hover:scale-[1.02] cursor-pointer whitespace-nowrap"
+            className="px-3.5 py-1.5 rounded-xl font-extrabold text-xs text-white bg-zinc-900 hover:bg-zinc-800 shadow-2xs transition-transform hover:scale-[1.02] cursor-pointer whitespace-nowrap shrink-0"
           >
             Log ₹{sliderAmount}
           </button>
           <button
             onClick={onOpenExpenseModal}
-            className="p-1.5 rounded-xl bg-white hover:bg-zinc-100 border border-black/10 text-zinc-600 transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl bg-white hover:bg-zinc-100 border border-black/10 text-zinc-600 transition-colors cursor-pointer shrink-0"
             title="Open advanced expense form"
             aria-label="Open advanced expense form"
           >
@@ -383,7 +383,7 @@ export const AppContent: React.FC = () => {
         </AnimatePresence>
 
         {/* ── Main column ── */}
-        <div className="flex-1 min-w-0 space-y-3.5 sm:space-y-5 pb-24 lg:pb-10">
+        <div className="flex-1 min-w-0 space-y-3.5 sm:space-y-5 pb-[calc(110px+env(safe-area-inset-bottom,0px))] lg:pb-10">
           {/* Mobile top bar without emoji */}
           <div className="lg:hidden card px-3.5 py-3 flex items-center gap-2.5">
             <button onClick={() => setDrawer(true)} className="w-9 h-9 rounded-2xl flex items-center justify-center cursor-pointer shrink-0" style={{ background: 'var(--ink)', color: '#fff' }} aria-label="Open menu">
@@ -477,21 +477,21 @@ export const AppContent: React.FC = () => {
       {/* ── Mobile Floating Action Button ── */}
       <button
         onClick={() => setIsExpenseModalOpen(true)}
-        className="lg:hidden fixed bottom-20 left-4 z-40 px-4 py-2.5 rounded-full bg-zinc-900 text-white font-extrabold text-xs shadow-xl flex items-center gap-1.5 border border-white/20 active:scale-95 transition-transform cursor-pointer"
+        className="lg:hidden fixed bottom-22 left-3 sm:left-4 z-40 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-full bg-zinc-900 text-white font-extrabold text-xs shadow-xl flex items-center gap-1.5 border border-white/20 active:scale-95 transition-transform cursor-pointer"
         aria-label="Add Daily Expense"
       >
         <Plus size={15} className="text-amber-400" />
         <span>+ Add Spend</span>
       </button>
 
-      {/* ── Mobile bottom nav ── */}
-      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 px-3 pb-3 pt-2" style={{ background: 'linear-gradient(to top, var(--canvas) 70%, transparent)' }} aria-label="Mobile">
-        <div className="card !rounded-[22px] px-2 py-2 flex items-center justify-between gap-1" style={{ boxShadow: 'var(--shadow-pop)' }}>
+      {/* ── Mobile bottom nav with Safe Area support ── */}
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 px-2 sm:px-3 pb-[calc(10px+env(safe-area-inset-bottom,0px))] pt-1.5 backdrop-blur-md" style={{ background: 'linear-gradient(to top, var(--canvas) 85%, transparent)' }} aria-label="Mobile">
+        <div className="card !rounded-[22px] px-1.5 sm:px-2 py-1.5 sm:py-2 flex items-center justify-between gap-1" style={{ boxShadow: 'var(--shadow-pop)' }}>
           {NAV.map((n) => (
             <button
               key={n.id}
               onClick={() => setActiveTab(n.id)}
-              className="flex-1 flex flex-col items-center gap-1 py-1.5 px-1 rounded-2xl cursor-pointer transition-all min-w-0"
+              className="flex-1 flex flex-col items-center justify-center gap-1 py-1.5 px-0.5 sm:px-1 rounded-2xl cursor-pointer transition-all min-w-0 min-h-[44px]"
               style={activeTab === n.id ? { background: 'var(--ink)', color: '#fff' } : { color: 'var(--text-3)' }}
               aria-current={activeTab === n.id ? 'page' : undefined}
             >

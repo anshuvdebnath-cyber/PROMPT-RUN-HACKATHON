@@ -336,7 +336,7 @@ export const WhatIfSimulator: React.FC = () => {
             </div>
 
             {/* Month-end forecast: the interconnected consequence */}
-            <div className="mt-2.5 p-3.5 rounded-2xl bg-white border border-amber-200 flex items-center justify-between gap-3">
+            <div className="mt-2.5 p-3.5 rounded-2xl bg-white border border-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
               <div className="min-w-0">
                 <span className="text-[10px] font-extrabold text-zinc-400 block uppercase tracking-wider">
                   Projected Month-End Forecast
@@ -351,13 +351,13 @@ export const WhatIfSimulator: React.FC = () => {
                   <span className="font-semibold">{metrics.riskLevel} → {effectiveMetrics.riskLevel}</span>
                 </p>
               </div>
-              <span className="text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 whitespace-nowrap shrink-0">
+              <span className="text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 whitespace-nowrap shrink-0 self-start sm:self-auto">
                 Day 30 impact
               </span>
             </div>
 
             {/* Savings safety net: locked buffer shapes the daily cap */}
-            <div className="mt-2.5 p-3.5 rounded-2xl bg-white border border-amber-200 flex items-center justify-between gap-3">
+            <div className="mt-2.5 p-3.5 rounded-2xl bg-white border border-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
               <div className="min-w-0">
                 <span className="text-[10px] font-extrabold text-zinc-400 block uppercase tracking-wider">
                   Savings Safety Net (locked)
@@ -366,7 +366,7 @@ export const WhatIfSimulator: React.FC = () => {
                   ₹{savingsLocked.toLocaleString('en-IN')} of ₹{savingsTarget.toLocaleString('en-IN')} goal ({savingsPct}%) · {simulation.impactSummary.savingsGoalImpact}
                 </p>
               </div>
-              <span className="text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 whitespace-nowrap shrink-0">
+              <span className="text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 whitespace-nowrap shrink-0 self-start sm:self-auto">
                 🛡️ {savingsPct}%
               </span>
             </div>

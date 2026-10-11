@@ -77,19 +77,19 @@ export const HeroVibeBanner: React.FC = () => {
 
         <div className="relative z-10 p-4 sm:p-6 flex flex-col gap-4 md:flex-row md:items-center">
           {/* Living mascot area - completely organic with zero carousel clutter */}
-          <div className="flex md:flex-col items-center gap-2.5 shrink-0">
+          <div className="flex md:flex-col items-center justify-center gap-2.5 shrink-0 w-full md:w-auto">
             {/* Squircle Mascot container */}
             <div
-              className="relative w-[104px] h-[104px] sm:w-[124px] sm:h-[124px] rounded-[28px] bg-white/95 border border-black/5 flex items-center justify-center overflow-hidden cursor-pointer group shadow-xs"
+              className="relative w-[96px] h-[96px] sm:w-[124px] sm:h-[124px] rounded-[24px] sm:rounded-[28px] bg-white/95 border border-black/5 flex items-center justify-center overflow-hidden cursor-pointer group shadow-xs"
               onClick={handleMascotTap}
               title="Living mascot — tap to cycle expression"
             >
               <div className="absolute inset-0 dot-grid opacity-60" />
-              <Mascot mood={activeMood} size={92} className="relative group-hover:scale-105 transition-transform" />
+              <Mascot mood={activeMood} size={84} className="relative group-hover:scale-105 transition-transform" />
             </div>
 
             {/* Seamless current mood indicator */}
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 border border-black/8 shadow-2xs text-[11.5px] font-black text-zinc-800">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 border border-black/8 shadow-2xs text-[11px] sm:text-[11.5px] font-black text-zinc-800">
               <span className="w-2 h-2 rounded-full shrink-0 animate-pulse" style={{ background: meta.color }} />
               <span className="capitalize">{meta.label}</span>
               {isCurrentLive && (
@@ -150,7 +150,7 @@ export const HeroVibeBanner: React.FC = () => {
           </div>
 
           {/* Health ring */}
-          <div className="shrink-0 flex justify-center md:justify-end">
+          <div className="shrink-0 flex justify-center md:justify-end w-full md:w-auto">
             <HealthScoreRing metrics={effectiveMetrics} size={110} />
           </div>
         </div>

@@ -20,20 +20,20 @@ const Stat: React.FC<StatProps> = ({ label, value, sub, icon, bg, fg, soft, badg
     initial={{ opacity: 0, y: 14 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-    className="card p-4 sm:p-5 flex flex-col justify-between gap-3 min-w-0 min-h-[150px]"
+    className="card p-3 sm:p-5 flex flex-col justify-between gap-2.5 sm:gap-3 min-w-0 min-h-[125px] sm:min-h-[150px]"
   >
-    <div className="flex items-center justify-between gap-2">
-      <span className="text-[11px] font-extrabold uppercase tracking-[0.1em] truncate" style={{ color: 'var(--text-3)' }}>
+    <div className="flex items-center justify-between gap-1.5">
+      <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.08em] truncate" style={{ color: 'var(--text-3)' }}>
         {label}
       </span>
-      <span className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0" style={{ background: bg, color: fg }}>
+      <span className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0" style={{ background: bg, color: fg }}>
         {icon}
       </span>
     </div>
     <div className="min-w-0">
-      <p className="font-display font-bold leading-none truncate" style={{ fontSize: 'clamp(1.55rem, 4vw, 2.1rem)' }}>{value}</p>
-      <p className="text-xs font-semibold mt-1 truncate" style={{ color: 'var(--text-2)' }}>{sub}</p>
-      {badge && <div className="mt-2">{badge}</div>}
+      <p className="font-display font-black leading-tight truncate text-lg min-[380px]:text-xl sm:text-2xl lg:text-3xl">{value}</p>
+      <p className="text-[11px] sm:text-xs font-semibold mt-0.5 sm:mt-1 truncate" style={{ color: 'var(--text-2)' }}>{sub}</p>
+      {badge && <div className="mt-1.5 sm:mt-2">{badge}</div>}
     </div>
     <div className="h-1.5 rounded-full overflow-hidden" style={{ background: soft }}>
       <div className="h-full w-full rounded-full opacity-60" style={{ background: fg }} />
@@ -72,7 +72,7 @@ export const MetricCards: React.FC = () => {
 
   return (
     <section aria-label="Key metrics">
-      <div className="grid grid-cols-1 min-[500px]:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-3.5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
         <Stat
           delay={0}
           label="Liquid balance"

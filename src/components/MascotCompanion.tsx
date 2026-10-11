@@ -136,7 +136,7 @@ export const MascotCompanion: React.FC = () => {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end pointer-events-auto select-none">
+    <div className="fixed bottom-22 sm:bottom-6 right-3 sm:right-6 z-40 flex flex-col items-end pointer-events-auto select-none">
       {/* Movie-style Thinking Cloud Pop-up */}
       <AnimatePresence>
         {isOpen && (
@@ -157,7 +157,7 @@ export const MascotCompanion: React.FC = () => {
                 times: [0, 0.6, 0.85, 1],
                 ease: 'easeOut',
               }}
-              className="relative max-w-[280px] sm:max-w-[320px] px-6 py-5 rounded-[40px] bg-white/98 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.20)] border-2 border-black/8"
+              className="relative max-w-[calc(100vw-32px)] sm:max-w-[320px] px-5 py-4 sm:px-6 sm:py-5 rounded-[36px] sm:rounded-[40px] bg-white/98 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.20)] border-2 border-black/8"
             >
               {/* Outer decorative cloud puffs/lobes for iconic movie cloud shape */}
               <div className="absolute -top-3 left-10 w-12 h-7 bg-white/98 rounded-full border-t-2 border-black/8 pointer-events-none" />
@@ -172,7 +172,7 @@ export const MascotCompanion: React.FC = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3, delay: 0.4 }}
-                className="relative z-10 text-[13.5px] font-extrabold text-zinc-900 leading-relaxed text-center tracking-tight"
+                className="relative z-10 text-[12px] sm:text-[13.5px] font-extrabold text-zinc-900 leading-relaxed text-center tracking-tight"
               >
                 "{currentThought.text}"
               </motion.p>

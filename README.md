@@ -34,6 +34,7 @@ Test-drive real-world decisions before committing:
 
 ### 2. 📅 30-Day Timeline & Time Machine
 - Interactive slider to advance day-by-day (Day 1 $\to$ Day 30) or scrub across the month.
+- **Time moves money:** stepping forward auto-posts due subscription renewals to the ledger (exactly once each) and flags newly-overdue bills — balance, daily allowance, risk, and mascot all react.
 - Preset scenarios:
   - **The Fresh Start**: Day 1 with ₹10k intact.
   - **Mid-Month Squeeze**: Day 15 with bills due and tight daily runway.

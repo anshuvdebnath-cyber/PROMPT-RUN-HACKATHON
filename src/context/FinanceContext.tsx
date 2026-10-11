@@ -42,6 +42,10 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     impactSummary: null,
   })
 
+  // Tracks auto-posted subscription renewals ("${subId}@day${n}") so each
+  // renewal hits the ledger exactly once, even if the user scrubs the slider.
+  const [chargedRenewals, setChargedRenewals] = useState<string[]>([])
+
   // Sanitize helper to protect against XSS or HTML injection in inputs
   const sanitizeText = (input: string): string => {
     return DOMPurify.sanitize(input.trim())
@@ -183,6 +187,52 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
     const nextDay = currentDay + 1
     setCurrentDay(nextDay)
+
+    // Real product behavior: active subscriptions renewing today auto-charge
+    // the ledger (each exactly once), so time visibly moves money → balance →
+    // allowance → risk → mascot. Slider scrubbing never backfills.
+    const dueRenewals = subscriptions.filter(
+      (s) =>
+        s.isActive &&
+        s.renewalDay === nextDay &&
+        !chargedRenewals.includes(`${s.id}@day${nextDay}`)
+    )
+    if (dueRenewals.length > 0) {
+      const now = new Date().toISOString()
+      const renewalTxs: Transaction[] = dueRenewals.map((s) => ({
+        id: `auto-renew-${s.id}-day${nextDay}`,
+        day: nextDay,
+        title: `🔁 ${s.name} Renewed`,
+        amount: s.amount,
+        category: 'Subscriptions' as TransactionCategory,
+        type: 'expense' as const,
+        timestamp: now,
+      }))
+      setTransactions((prev) => [...renewalTxs, ...prev])
+      setChargedRenewals((prev) => [
+        ...prev,
+        ...dueRenewals.map((s) => `${s.id}@day${nextDay}`),
+      ])
+      const total = dueRenewals.reduce((sum, s) => sum + s.amount, 0)
+      addToast(
+        `Auto-renewed ${dueRenewals.length} subscription${dueRenewals.length > 1 ? 's' : ''} (−₹${total})`,
+        'warning',
+        dueRenewals.map((s) => s.name).join(', ') + ` charged on Day ${nextDay}`
+      )
+    }
+
+    // Overdue commitments become visible consequences the day they lapse
+    const newlyOverdue = commitments.filter(
+      (c) => !c.isPaid && !c.isPaused && c.dueDay === currentDay
+    )
+    if (newlyOverdue.length > 0) {
+      addToast(
+        `⚠️ ${newlyOverdue.length} bill${newlyOverdue.length > 1 ? 's' : ''} now overdue`,
+        'danger',
+        newlyOverdue.map((c) => `${c.title} (₹${c.amount}, due Day ${c.dueDay})`).join('; ')
+      )
+    }
+
     addToast(`Advanced to Day ${nextDay} of 30`, 'info')
   }
 
@@ -290,6 +340,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const loadPresetScenario = (preset: 'fresh' | 'mid' | 'survivor') => {
     clearSimulation()
+    setChargedRenewals([])
     if (preset === 'fresh') {
       setCurrentDay(1)
       setTransactions(DEFAULT_TRANSACTIONS)

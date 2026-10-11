@@ -32,5 +32,8 @@ describe('WhatIfSimulator Component', () => {
     expect(screen.getByText(/Live Sandbox Active/i)).toBeInTheDocument()
     expect(screen.getByText(/Confirm & Commit to Ledger/i)).toBeInTheDocument()
     expect(screen.getByText(/Discard Simulation/i)).toBeInTheDocument()
+    // Problem statement: simulation must show forecast + savings consequences
+    expect(screen.getByText(/Projected Month-End Forecast/i)).toBeInTheDocument()
+    expect(screen.getByText(/Savings Safety Net/i)).toBeInTheDocument()
   })
 })

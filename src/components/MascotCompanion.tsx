@@ -138,6 +138,7 @@ export const MascotCompanion: React.FC = () => {
   }, [])
 
   const isDraggingRef = useRef(false)
+  const [isWobbling, setIsWobbling] = useState(false)
 
   // Tapping the mascot cycles to the next thought and pops the cloud
   const handleMascotTap = () => {
@@ -151,11 +152,16 @@ export const MascotCompanion: React.FC = () => {
     <motion.div
       drag
       dragMomentum={false}
-      dragElastic={0.05}
+      dragElastic={0.06}
       onDragStart={() => {
         isDraggingRef.current = true
+        setIsWobbling(false)
       }}
       onDragEnd={() => {
+        setIsWobbling(true)
+        setTimeout(() => {
+          setIsWobbling(false)
+        }, 750)
         setTimeout(() => {
           isDraggingRef.current = false
         }, 140)
@@ -246,31 +252,47 @@ export const MascotCompanion: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Floating Mascot (Tapping changes the thought cloud, dragging moves anywhere) */}
-      <div className="flex flex-col items-center gap-1 group">
-        <span className="text-[9px] font-black uppercase tracking-wider text-zinc-500 bg-white/95 px-2 py-0.5 rounded-full shadow-2xs border border-black/8 flex items-center gap-1">
-          ✋ Drag anywhere
-        </span>
+      {/* Floating Mascot with jelly wobble physics when dragged or released */}
+      <motion.div
+        animate={
+          isWobbling
+            ? {
+                rotate: [0, -18, 16, -10, 7, -3, 0],
+                scaleX: [1, 1.25, 0.85, 1.12, 0.95, 1.03, 1],
+                scaleY: [1, 0.82, 1.18, 0.92, 1.06, 0.98, 1],
+              }
+            : {
+                y: [0, -5, 0],
+                rotate: 0,
+                scaleX: 1,
+                scaleY: 1,
+              }
+        }
+        transition={
+          isWobbling
+            ? {
+                duration: 0.75,
+                ease: 'easeInOut',
+              }
+            : {
+                y: { repeat: Infinity, duration: 3, ease: 'easeInOut' },
+              }
+        }
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.94 }}
+        onClick={handleMascotTap}
+        className="relative cursor-pointer group"
+        title="Tap for next thought or drag around!"
+      >
+        {/* Ambient glow */}
+        <div className="absolute inset-0 rounded-[26px] bg-amber-400/20 blur-xl -z-10 group-hover:bg-amber-400/35 transition-all duration-300" />
 
-        <motion.div
-          animate={{ y: [0, -5, 0] }}
-          transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.94 }}
-          onClick={handleMascotTap}
-          className="relative cursor-pointer"
-          title="Drag anywhere on screen, or tap for next thought!"
-        >
-          {/* Ambient glow */}
-          <div className="absolute inset-0 rounded-[26px] bg-amber-400/20 blur-xl -z-10 group-hover:bg-amber-400/35 transition-all duration-300" />
-
-          {/* Clean squircle mascot container */}
-          <div className="w-[68px] h-[68px] sm:w-[92px] sm:h-[92px] rounded-[22px] sm:rounded-[28px] bg-white/95 backdrop-blur-md border-2 border-black/10 shadow-[0_12px_30px_-6px_rgba(0,0,0,0.18)] flex items-center justify-center p-1 transition-all group-hover:shadow-[0_18px_38px_-4px_rgba(0,0,0,0.22)]">
-            <Mascot mood={currentThought.mood} size={58} className="sm:hidden" />
-            <Mascot mood={currentThought.mood} size={80} className="hidden sm:block" />
-          </div>
-        </motion.div>
-      </div>
+        {/* Clean squircle mascot container */}
+        <div className="w-[68px] h-[68px] sm:w-[92px] sm:h-[92px] rounded-[22px] sm:rounded-[28px] bg-white/95 backdrop-blur-md border-2 border-black/10 shadow-[0_12px_30px_-6px_rgba(0,0,0,0.18)] flex items-center justify-center p-1 transition-all group-hover:shadow-[0_18px_38px_-4px_rgba(0,0,0,0.22)]">
+          <Mascot mood={currentThought.mood} size={58} className="sm:hidden" />
+          <Mascot mood={currentThought.mood} size={80} className="hidden sm:block" />
+        </div>
+      </motion.div>
     </motion.div>
   )
 }

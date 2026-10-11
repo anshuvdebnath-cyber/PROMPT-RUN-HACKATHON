@@ -138,6 +138,7 @@ export const MascotCompanion: React.FC = () => {
   }, [])
 
   const isDraggingRef = useRef(false)
+  const constraintsRef = useRef<HTMLDivElement>(null)
 
   // Tapping the mascot cycles to the next thought and pops the cloud
   const handleMascotTap = () => {
@@ -148,124 +149,125 @@ export const MascotCompanion: React.FC = () => {
   }
 
   return (
-    <motion.div
-      drag
-      dragMomentum={false}
-      dragElastic={0.06}
-      onDragStart={() => {
-        isDraggingRef.current = true
-      }}
-      onDragEnd={() => {
-        setTimeout(() => {
-          isDraggingRef.current = false
-        }, 140)
-      }}
-      whileDrag={{ scale: 1.05, cursor: 'grabbing' }}
-      className="fixed bottom-22 right-3 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end pointer-events-auto select-none touch-none cursor-grab"
+    <div
+      ref={constraintsRef}
+      className="fixed inset-0 pointer-events-none z-50 overflow-hidden p-3 sm:p-5"
     >
-      {/* Movie-style Thinking Cloud Pop-up */}
-      <AnimatePresence>
-        {isOpen && (
-          <div className="relative mb-2 flex flex-col items-end cursor-pointer" onClick={handleMascotTap} title="Tap to change thought">
-            {/* The Main Puffy Thought Cloud with comic lobes */}
-            <motion.div
-              key={currentThought.text}
-              initial={{ scale: 0, opacity: 0, y: 30, transformOrigin: 'bottom right' }}
-              animate={{
-                scale: [0, 1.1, 0.96, 1],
-                opacity: 1,
-                y: 0,
-              }}
-              exit={{ scale: 0, opacity: 0, y: 15, transition: { duration: 0.22 } }}
-              transition={{
-                duration: 0.42,
-                delay: 0.2,
-                times: [0, 0.6, 0.85, 1],
-                ease: 'easeOut',
-              }}
-              className="relative max-w-[270px] sm:max-w-[320px] px-4 py-3.5 sm:px-6 sm:py-5 rounded-[30px] sm:rounded-[40px] bg-white/98 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.22)] border-2 border-black/8"
-            >
-              {/* Outer decorative cloud puffs/lobes for iconic movie cloud shape */}
-              <div className="absolute -top-2.5 left-8 w-10 h-6 bg-white/98 rounded-full border-t-2 border-black/8 pointer-events-none" />
-              <div className="absolute -top-3.5 left-20 w-14 h-8 bg-white/98 rounded-full border-t-2 border-black/8 pointer-events-none" />
-              <div className="absolute -top-2.5 right-10 w-10 h-6 bg-white/98 rounded-full border-t-2 border-black/8 pointer-events-none" />
-              <div className="absolute -bottom-2.5 left-12 w-12 h-6 bg-white/98 rounded-full border-b-2 border-black/8 pointer-events-none" />
-              <div className="absolute -left-2.5 top-4 w-6 h-10 bg-white/98 rounded-full border-l-2 border-black/8 pointer-events-none" />
-              <div className="absolute -right-2.5 top-4 w-6 h-10 bg-white/98 rounded-full border-r-2 border-black/8 pointer-events-none" />
-
-              {/* Close / Dismiss button */}
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setIsOpen(false)
-                }}
-                className="absolute top-2 right-3.5 z-20 w-5 h-5 rounded-full bg-black/5 hover:bg-black/10 flex items-center justify-center text-[10px] font-black text-zinc-400 hover:text-zinc-700 cursor-pointer"
-                title="Dismiss thought"
-                aria-label="Dismiss thought"
-              >
-                ✕
-              </button>
-
-              {/* Thought text */}
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.28, delay: 0.3 }}
-                className="relative z-10 text-[11.5px] sm:text-[13.5px] font-extrabold text-zinc-900 leading-snug sm:leading-relaxed text-center tracking-tight pr-2"
-              >
-                "{currentThought.text}"
-              </motion.p>
-            </motion.div>
-
-            {/* 3 Ascending Thought Bubbles trailing down to the mascot */}
-            <div className="flex flex-col items-end pr-9 mt-1 -space-y-0.5">
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={{ duration: 0.18, delay: 0.15 }}
-                className="w-4.5 h-4.5 rounded-full bg-white/98 border-2 border-black/8 shadow-xs"
-              />
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={{ duration: 0.18, delay: 0.08 }}
-                className="w-3 h-3 rounded-full bg-white/98 border-2 border-black/8 shadow-2xs mr-2"
-              />
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0, opacity: 0 }}
-                transition={{ duration: 0.18, delay: 0 }}
-                className="w-2 h-2 rounded-full bg-white/98 border-2 border-black/8 shadow-2xs mr-3.5"
-              />
-            </div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Floating Mascot */}
       <motion.div
-        animate={{ y: [0, -5, 0] }}
-        transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.94 }}
-        onClick={handleMascotTap}
-        className="relative cursor-pointer group"
-        title="Tap for next thought or drag around!"
+        drag
+        dragConstraints={constraintsRef}
+        dragMomentum={false}
+        dragElastic={0}
+        onDragStart={() => {
+          isDraggingRef.current = true
+        }}
+        onDragEnd={() => {
+          setTimeout(() => {
+            isDraggingRef.current = false
+          }, 140)
+        }}
+        whileDrag={{ scale: 1.05, cursor: 'grabbing' }}
+        className="absolute bottom-20 right-3 sm:bottom-6 sm:right-6 flex flex-col items-end pointer-events-auto select-none touch-none cursor-grab active:cursor-grabbing"
       >
-        {/* Ambient glow */}
-        <div className="absolute inset-0 rounded-[26px] bg-amber-400/20 blur-xl -z-10 group-hover:bg-amber-400/35 transition-all duration-300" />
+        {/* Movie-style Thinking Cloud Pop-up */}
+        <AnimatePresence>
+          {isOpen && (
+            <div className="relative mb-2 flex flex-col items-end cursor-pointer" onClick={handleMascotTap} title="Tap to change thought">
+              {/* The Main Puffy Thought Cloud with comic lobes */}
+              <motion.div
+                key={currentThought.text}
+                initial={{ scale: 0, opacity: 0, y: 30, transformOrigin: 'bottom right' }}
+                animate={{
+                  scale: [0, 1.1, 0.96, 1],
+                  opacity: 1,
+                  y: 0,
+                }}
+                exit={{ scale: 0, opacity: 0, y: 15, transition: { duration: 0.22 } }}
+                transition={{
+                  duration: 0.42,
+                  delay: 0.2,
+                  times: [0, 0.6, 0.85, 1],
+                  ease: 'easeOut',
+                }}
+                className="relative max-w-[270px] sm:max-w-[320px] px-4 py-3.5 sm:px-6 sm:py-5 rounded-[30px] sm:rounded-[40px] bg-white/98 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.22)] border-2 border-black/8"
+              >
+                {/* Outer decorative cloud puffs/lobes for iconic movie cloud shape */}
+                <div className="absolute -top-2.5 left-8 w-10 h-6 bg-white/98 rounded-full border-t-2 border-black/8 pointer-events-none" />
+                <div className="absolute -top-3.5 left-20 w-14 h-8 bg-white/98 rounded-full border-t-2 border-black/8 pointer-events-none" />
+                <div className="absolute -top-2.5 right-10 w-10 h-6 bg-white/98 rounded-full border-t-2 border-black/8 pointer-events-none" />
+                <div className="absolute -bottom-2.5 left-12 w-12 h-6 bg-white/98 rounded-full border-b-2 border-black/8 pointer-events-none" />
+                <div className="absolute -left-2.5 top-4 w-6 h-10 bg-white/98 rounded-full border-l-2 border-black/8 pointer-events-none" />
+                <div className="absolute -right-2.5 top-4 w-6 h-10 bg-white/98 rounded-full border-r-2 border-black/8 pointer-events-none" />
 
-        {/* Clean squircle mascot container */}
-        <div className="w-[68px] h-[68px] sm:w-[92px] sm:h-[92px] rounded-[22px] sm:rounded-[28px] bg-white/95 backdrop-blur-md border-2 border-black/10 shadow-[0_12px_30px_-6px_rgba(0,0,0,0.18)] flex items-center justify-center p-1 transition-all group-hover:shadow-[0_18px_38px_-4px_rgba(0,0,0,0.22)]">
-          <Mascot mood={currentThought.mood} size={58} className="sm:hidden" />
-          <Mascot mood={currentThought.mood} size={80} className="hidden sm:block" />
+                {/* Close / Dismiss button */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setIsOpen(false)
+                  }}
+                  className="absolute top-2 right-3.5 z-20 w-5 h-5 rounded-full bg-black/5 hover:bg-black/10 flex items-center justify-center text-[10px] font-black text-zinc-400 hover:text-zinc-700 cursor-pointer"
+                  title="Dismiss thought"
+                  aria-label="Dismiss thought"
+                >
+                  ✕
+                </button>
+
+                {/* Thought text */}
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.28, delay: 0.3 }}
+                  className="relative z-10 text-[11.5px] sm:text-[13.5px] font-extrabold text-zinc-900 leading-snug sm:leading-relaxed text-center tracking-tight pr-2"
+                >
+                  "{currentThought.text}"
+                </motion.p>
+              </motion.div>
+
+              {/* 3 Ascending Thought Bubbles trailing down to the mascot */}
+              <div className="flex flex-col items-end pr-9 mt-1 -space-y-0.5">
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ duration: 0.18, delay: 0.15 }}
+                  className="w-4.5 h-4.5 rounded-full bg-white/98 border-2 border-black/8 shadow-xs"
+                />
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ duration: 0.18, delay: 0.08 }}
+                  className="w-3 h-3 rounded-full bg-white/98 border-2 border-black/8 shadow-2xs mr-2"
+                />
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ duration: 0.18, delay: 0 }}
+                  className="w-2 h-2 rounded-full bg-white/98 border-2 border-black/8 shadow-2xs mr-3.5"
+                />
+              </div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* Stable, Clean Mascot container */}
+        <div
+          onClick={handleMascotTap}
+          className="relative cursor-pointer group"
+          title="Tap for next thought or drag around!"
+        >
+          {/* Ambient glow */}
+          <div className="absolute inset-0 rounded-[26px] bg-amber-400/20 blur-xl -z-10 group-hover:bg-amber-400/35 transition-all duration-300" />
+
+          {/* Clean squircle mascot container with single face */}
+          <div className="w-[72px] h-[72px] sm:w-[86px] sm:h-[86px] rounded-[24px] sm:rounded-[28px] bg-white/95 backdrop-blur-md border-2 border-black/10 shadow-[0_12px_30px_-6px_rgba(0,0,0,0.18)] flex items-center justify-center p-1 transition-all group-hover:shadow-[0_18px_38px_-4px_rgba(0,0,0,0.22)]">
+            <Mascot mood={currentThought.mood} size={64} />
+          </div>
         </div>
       </motion.div>
-    </motion.div>
+    </div>
   )
 }
 

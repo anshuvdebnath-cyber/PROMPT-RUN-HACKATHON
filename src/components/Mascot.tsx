@@ -46,16 +46,8 @@ export const Mascot: React.FC<MascotProps> = ({
       <motion.div
         className="relative flex items-center justify-center filter drop-shadow-sm cursor-pointer"
         style={{ width: size, height: size }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        animate={{
-          y: [0, -3, 0],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
+        whileHover={{ scale: 1.04 }}
+        whileTap={{ scale: 0.96 }}
         role="img"
         aria-label={`Financial mood mascot: ${meta.label} (${meta.vibe})`}
       >

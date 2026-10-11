@@ -485,8 +485,8 @@ export const AppContent: React.FC = () => {
       </button>
 
       {/* ── Mobile bottom nav with Safe Area support ── */}
-      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 px-2 sm:px-3 pb-[calc(10px+env(safe-area-inset-bottom,0px))] pt-1.5 backdrop-blur-md" style={{ background: 'linear-gradient(to top, var(--canvas) 85%, transparent)' }} aria-label="Mobile">
-        <div className="card !rounded-[22px] px-1.5 sm:px-2 py-1.5 sm:py-2 flex items-center justify-between gap-1" style={{ boxShadow: 'var(--shadow-pop)' }}>
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 px-2 sm:px-3 pb-[calc(10px+env(safe-area-inset-bottom,0px))] pt-1.5 backdrop-blur-md pointer-events-none" style={{ background: 'linear-gradient(to top, var(--canvas) 85%, transparent)' }} aria-label="Mobile">
+        <div className="card !rounded-[22px] px-1.5 sm:px-2 py-1.5 sm:py-2 flex items-center justify-between gap-1 max-w-md sm:max-w-lg mx-auto pointer-events-auto" style={{ boxShadow: 'var(--shadow-pop)' }}>
           {NAV.map((n) => (
             <button
               key={n.id}

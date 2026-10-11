@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, lazy, Suspense } from 'react'
 import {
   Sparkles, LineChart, CreditCard, ShieldCheck, ReceiptText,
   Menu, X, RotateCcw, CalendarDays, ChevronRight, ChevronLeft, Wallet, Plus, SlidersHorizontal,
@@ -6,6 +6,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion'
 import { FinanceProvider } from './context/FinanceContext'
 import { useFinance } from './context/useFinance'
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import { HeroVibeBanner } from './components/HeroVibeBanner'
 import { MetricCards } from './components/MetricCards'
 import { WhatIfSimulator } from './components/WhatIfSimulator'
@@ -15,10 +16,12 @@ import { SavingsTracker } from './components/SavingsTracker'
 import { SurpriseEvents } from './components/SurpriseEvents'
 import { ExpenseLedger } from './components/ExpenseLedger'
 import { ToastContainer } from './components/ToastContainer'
-import { SurvivalCelebration } from './components/SurvivalCelebration'
-import { QuickExpenseModal } from './components/QuickExpenseModal'
 import { MascotCompanion } from './components/MascotCompanion'
 import { Mascot } from './components/Mascot'
+
+// Lazy-loaded dialogs for sub-500ms initial paint performance
+const QuickExpenseModal = lazy(() => import('./components/QuickExpenseModal').then(m => ({ default: m.QuickExpenseModal })))
+const SurvivalCelebration = lazy(() => import('./components/SurvivalCelebration').then(m => ({ default: m.SurvivalCelebration })))
 import { TransactionCategory } from './types/finance'
 import { getMoodForExpenseAmount } from './engine/financeEngine'
 
@@ -151,6 +154,19 @@ function SidebarBody({ activeTab, setActiveTab, onNavigate, onOpenExpenseModal }
         >
           <RotateCcw size={12} /> Reset to Day 1
         </button>
+
+        {/* Keyboard Shortcuts Helper */}
+        <div className="mt-3 pt-2.5 border-t border-black/5 text-[10.5px] text-zinc-400 font-medium">
+          <p className="font-bold text-zinc-500 uppercase tracking-wider text-[9.5px] mb-1">⚡ Hotkeys:</p>
+          <div className="flex flex-wrap items-center gap-1">
+            <kbd className="px-1.5 py-0.5 rounded bg-black/5 font-mono text-[10px] font-bold text-zinc-700">E</kbd>
+            <span className="text-zinc-500 mr-1">Spend</span>
+            <kbd className="px-1.5 py-0.5 rounded bg-black/5 font-mono text-[10px] font-bold text-zinc-700">N</kbd>
+            <span className="text-zinc-500 mr-1">Next Day</span>
+            <kbd className="px-1.5 py-0.5 rounded bg-black/5 font-mono text-[10px] font-bold text-zinc-700">1-5</kbd>
+            <span className="text-zinc-500">Tabs</span>
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -307,8 +323,16 @@ export const AppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('simulator')
   const [drawer, setDrawer] = useState(false)
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false)
-  const { currentDay } = useFinance()
+  const { currentDay, advanceDay } = useFinance()
   const active = NAV.find((n) => n.id === activeTab)!
+
+  // Power user keyboard shortcuts (E: log expense, N: next day, 1-5: tabs, Esc: close)
+  useKeyboardShortcuts({
+    onOpenQuickExpense: () => setIsExpenseModalOpen(true),
+    onAdvanceDay: () => advanceDay(),
+    onSelectTab: (tab) => setActiveTab(tab),
+    onEscape: () => setIsExpenseModalOpen(false),
+  })
 
   return (
     <div className="min-h-screen w-full" style={{ background: 'var(--canvas)' }}>
@@ -482,12 +506,14 @@ export const AppContent: React.FC = () => {
       <MascotCompanion />
 
       {/* Global Modals & Notifications */}
-      <QuickExpenseModal
-        isOpen={isExpenseModalOpen}
-        onClose={() => setIsExpenseModalOpen(false)}
-      />
+      <Suspense fallback={null}>
+        <QuickExpenseModal
+          isOpen={isExpenseModalOpen}
+          onClose={() => setIsExpenseModalOpen(false)}
+        />
+        <SurvivalCelebration />
+      </Suspense>
       <ToastContainer />
-      <SurvivalCelebration />
     </div>
   )
 }

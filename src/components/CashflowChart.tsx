@@ -60,8 +60,8 @@ export const CashflowChart: React.FC = () => {
   const currentPoint = points[currentDay - 1] || points[0]
 
   return (
-    <div className="card-premium p-6 sm:p-8 bg-white border border-black/8 shadow-card">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 border-b border-black/8">
+    <div className="card p-6 sm:p-8" style={{ background: 'var(--canvas-card)' }}>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 border-b" style={{ borderColor: 'var(--border)' }}>
         <div>
           <h3 className="text-xl sm:text-2xl font-extrabold font-display text-zinc-900">
             30-Day Runway Forecast
@@ -83,7 +83,7 @@ export const CashflowChart: React.FC = () => {
       </div>
 
       {/* SVG Wavy Chart with Soft Gradient */}
-      <div className="relative mt-5 w-full overflow-hidden rounded-[24px] bg-[#FAF7F2] p-4 border border-black/6">
+      <div className="relative mt-5 w-full overflow-hidden rounded-[24px] p-4 border" style={{ background: 'var(--canvas-inset)', borderColor: 'var(--border)' }}>
         <svg
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
           className="w-full h-48 sm:h-56 overflow-visible"
@@ -174,7 +174,7 @@ export const CashflowChart: React.FC = () => {
 
       {/* Summary Footer */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mt-5">
-        <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-black/5">
+        <div className="p-4 rounded-2xl border" style={{ background: 'var(--canvas-inset)', borderColor: 'var(--border)' }}>
           <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 block">
             Current Day Burn
           </span>
@@ -182,7 +182,7 @@ export const CashflowChart: React.FC = () => {
             ₹{effectiveMetrics.burnRateDaily}/day
           </span>
         </div>
-        <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-black/5">
+        <div className="p-4 rounded-2xl border" style={{ background: 'var(--canvas-inset)', borderColor: 'var(--border)' }}>
           <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 block">
             Projected End Balance
           </span>

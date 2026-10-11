@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Sparkles, LineChart, CreditCard, ShieldCheck, ReceiptText } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { FinanceProvider } from './context/FinanceContext'
 import { Navbar } from './components/Navbar'
 import { HeroVibeBanner } from './components/HeroVibeBanner'
@@ -15,138 +16,99 @@ import { SurvivalCelebration } from './components/SurvivalCelebration'
 
 type ActiveTab = 'simulator' | 'runway' | 'commitments' | 'savings' | 'ledger'
 
+const TABS: { id: ActiveTab; label: string; icon: React.ReactNode; color: string }[] = [
+  { id: 'simulator',   label: 'What-If Simulator',  icon: <Sparkles size={14} />,    color: '#F5C842' },
+  { id: 'runway',      label: 'Runway Forecast',     icon: <LineChart size={14} />,   color: '#F9A8B4' },
+  { id: 'commitments', label: 'Bills & Subs',         icon: <CreditCard size={14} />,  color: '#B8A9F8' },
+  { id: 'savings',     label: 'Savings & Shocks',    icon: <ShieldCheck size={14} />, color: '#6DD9A0' },
+  { id: 'ledger',      label: 'Expense Ledger',      icon: <ReceiptText size={14} />, color: '#6EC6F8' },
+]
+
 export const AppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('simulator')
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] text-zinc-900 w-full px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex flex-col justify-between">
-      <div className="w-full max-w-[1600px] mx-auto space-y-6">
-        {/* Top Navigation & Timeline Scrubber */}
+    <div
+      className="min-h-screen w-full"
+      style={{ background: 'var(--canvas)' }}
+    >
+      {/* ── Scrollable content column ─────────────────────────────────── */}
+      <div className="w-full max-w-[1440px] mx-auto px-5 sm:px-8 lg:px-12 xl:px-16 py-6 space-y-8">
+
+        {/* 1. Navbar / Header */}
         <Navbar />
 
-        {/* Hero Banner: Animated Squircle Mascot & Radial Health Score Ring */}
+        {/* 2. Hero Mascot Banner */}
         <HeroVibeBanner />
 
-        {/* 4 Pastel Core Financial Metric Cards */}
+        {/* 3. KPI Metric Cards */}
         <MetricCards />
 
-        {/* Full-Width Workspace Navigation Tabs */}
-        <div className="w-full pt-4">
-          <div className="flex items-center justify-between border-b border-black/8 pb-4 flex-wrap gap-3">
-            <div className="flex items-center gap-2 overflow-x-auto py-1">
+        {/* 4. Tab Navigation */}
+        <div className="w-full overflow-x-auto pb-1">
+          <div className="tab-strip min-w-max">
+            {TABS.map((tab) => (
               <button
-                onClick={() => setActiveTab('simulator')}
-                className={`px-5 py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'simulator'
-                    ? 'bg-zinc-900 text-white shadow-sm'
-                    : 'bg-white hover:bg-zinc-100 text-zinc-600 border border-black/8'
-                }`}
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+                aria-current={activeTab === tab.id ? 'page' : undefined}
               >
-                <Sparkles size={15} className={activeTab === 'simulator' ? 'text-amber-400' : ''} />
-                <span>What-If Simulator</span>
+                <span
+                  style={{
+                    color: activeTab === tab.id ? tab.color : 'currentColor',
+                    transition: 'color 0.2s',
+                  }}
+                >
+                  {tab.icon}
+                </span>
+                {tab.label}
               </button>
-
-              <button
-                onClick={() => setActiveTab('runway')}
-                className={`px-5 py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'runway'
-                    ? 'bg-zinc-900 text-white shadow-sm'
-                    : 'bg-white hover:bg-zinc-100 text-zinc-600 border border-black/8'
-                }`}
-              >
-                <LineChart size={15} className={activeTab === 'runway' ? 'text-pink-400' : ''} />
-                <span>Runway Forecast</span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab('commitments')}
-                className={`px-5 py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'commitments'
-                    ? 'bg-zinc-900 text-white shadow-sm'
-                    : 'bg-white hover:bg-zinc-100 text-zinc-600 border border-black/8'
-                }`}
-              >
-                <CreditCard size={15} className={activeTab === 'commitments' ? 'text-purple-400' : ''} />
-                <span>Bills & Subscriptions</span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab('savings')}
-                className={`px-5 py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'savings'
-                    ? 'bg-zinc-900 text-white shadow-sm'
-                    : 'bg-white hover:bg-zinc-100 text-zinc-600 border border-black/8'
-                }`}
-              >
-                <ShieldCheck size={15} className={activeTab === 'savings' ? 'text-emerald-400' : ''} />
-                <span>Savings & Shocks</span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab('ledger')}
-                className={`px-5 py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-                  activeTab === 'ledger'
-                    ? 'bg-zinc-900 text-white shadow-sm'
-                    : 'bg-white hover:bg-zinc-100 text-zinc-600 border border-black/8'
-                }`}
-              >
-                <ReceiptText size={15} className={activeTab === 'ledger' ? 'text-cyan-400' : ''} />
-                <span>Expense Ledger</span>
-              </button>
-            </div>
+            ))}
           </div>
         </div>
 
-        {/* Main Workspace Stage */}
-        <main className="w-full pt-2" aria-label="Active workspace content">
-          {activeTab === 'simulator' && (
-            <div className="w-full">
-              <WhatIfSimulator />
-            </div>
-          )}
-
-          {activeTab === 'runway' && (
-            <div className="w-full">
-              <CashflowChart />
-            </div>
-          )}
-
-          {activeTab === 'commitments' && (
-            <div className="w-full">
-              <CommitmentsManager />
-            </div>
-          )}
-
-          {activeTab === 'savings' && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-              <SavingsTracker />
-              <SurpriseEvents />
-            </div>
-          )}
-
-          {activeTab === 'ledger' && (
-            <div className="w-full">
-              <ExpenseLedger />
-            </div>
-          )}
+        {/* 5. Active Workspace Panel */}
+        <main aria-label="Active workspace" className="w-full pb-12">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {activeTab === 'simulator'   && <WhatIfSimulator />}
+              {activeTab === 'runway'      && <CashflowChart />}
+              {activeTab === 'commitments' && <CommitmentsManager />}
+              {activeTab === 'savings'     && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <SavingsTracker />
+                  <SurpriseEvents />
+                </div>
+              )}
+              {activeTab === 'ledger'      && <ExpenseLedger />}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
 
-      {/* Toast Notifications */}
-      <ToastContainer />
-
-      {/* Day 30 Victory Modal */}
-      <SurvivalCelebration />
-
-      {/* Full-Screen Footer */}
-      <footer className="w-full mt-16 pt-6 border-t border-black/8 text-center text-xs text-zinc-500">
-        <p className="font-extrabold text-zinc-700">
-          Broke But Functional — Survive the Month • Gen Z Personal Finance Challenge
+      {/* Footer */}
+      <footer
+        className="w-full border-t text-center py-8 px-6"
+        style={{ borderColor: 'var(--border)', background: 'var(--canvas)' }}
+      >
+        <p className="text-sm font-bold" style={{ color: 'var(--text-1)' }}>
+          Broke But Functional — Survive the Month
         </p>
-        <p className="mt-1 text-[11px] text-zinc-400">
-          Prompt Run Hackathon · Engineered for Full-Screen Responsive Editorial Design
+        <p className="text-xs mt-1" style={{ color: 'var(--text-3)' }}>
+          Gen Z Personal Finance Challenge · Prompt Run Hackathon 2024
         </p>
       </footer>
+
+      {/* Overlays */}
+      <ToastContainer />
+      <SurvivalCelebration />
     </div>
   )
 }

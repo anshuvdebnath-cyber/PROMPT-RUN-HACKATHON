@@ -14,8 +14,8 @@ export const CommitmentsManager: React.FC = () => {
   } = useFinance()
 
   return (
-    <div className="card-premium p-6 sm:p-8 bg-white border border-black/8 shadow-card">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-5 border-b border-black/8">
+    <div className="card p-6 sm:p-8" style={{ background: 'var(--canvas-card)' }}>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-5 border-b" style={{ borderColor: 'var(--border)' }}>
         <div>
           <h3 className="text-xl sm:text-2xl font-extrabold font-display text-zinc-900">
             Commitments & Subscriptions

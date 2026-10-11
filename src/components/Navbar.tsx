@@ -8,113 +8,135 @@ export const Navbar: React.FC = () => {
     useFinance()
 
   const daysRemaining = Math.max(0, 30 - currentDay)
+  const progress = ((currentDay - 1) / 29) * 100
 
   return (
-    <header className="w-full pt-4 pb-2" role="banner">
-      {/* Top Brand & Preset Row */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-4 border-b border-black/8">
-        <div>
-          <div className="flex items-center gap-3">
-            <span className="text-3xl select-none" role="img" aria-label="Money with wings">
-              💸
-            </span>
-            <div>
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 font-display">
-                  Broke But Functional
-                </h1>
-                <span className="px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-amber-200 text-amber-950 border border-amber-300 shadow-2xs">
-                  ₹10k · 30-Day Survival Challenge
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm text-zinc-500 font-medium mt-0.5">
-                Survive the month, balance commitments, and master real Gen Z trade-offs.
-              </p>
+    <header role="banner">
+      {/* ── Brand row ──────────────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        {/* Brand */}
+        <div className="flex items-center gap-3">
+          <span className="text-4xl select-none leading-none" role="img" aria-label="Money with wings">
+            💸
+          </span>
+          <div>
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1
+                className="text-2xl sm:text-3xl font-extrabold font-display tracking-tight"
+                style={{ color: 'var(--text-1)' }}
+              >
+                Broke But Functional
+              </h1>
+              <span
+                className="pill"
+                style={{ background: 'var(--butter)', borderColor: 'var(--butter-accent)', color: '#7A5E00' }}
+              >
+                ₹10k · 30-Day Challenge
+              </span>
             </div>
+            <p className="text-sm mt-0.5 font-medium" style={{ color: 'var(--text-3)' }}>
+              Survive the month, balance commitments, master real Gen Z trade-offs.
+            </p>
           </div>
         </div>
 
-        {/* Preset Scenarios Switcher */}
+        {/* Scenario Presets */}
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[11px] font-extrabold text-zinc-400 uppercase tracking-wider">
-            Scenarios:
+          <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--text-3)' }}>
+            Load Scenario:
           </span>
-          <button
-            onClick={() => loadPresetScenario('fresh')}
-            className="px-3.5 py-1.5 text-xs font-extrabold rounded-full bg-emerald-100 hover:bg-emerald-200 text-emerald-950 transition-colors border border-emerald-300 shadow-2xs cursor-pointer"
-            title="Start fresh on Day 1"
-          >
-            🌱 Fresh Start
-          </button>
-          <button
-            onClick={() => loadPresetScenario('mid')}
-            className="px-3.5 py-1.5 text-xs font-extrabold rounded-full bg-amber-100 hover:bg-amber-200 text-amber-950 transition-colors border border-amber-300 shadow-2xs cursor-pointer"
-            title="Mid-month squeeze with unexpected costs"
-          >
-            ⚡ Mid-Month (D15)
-          </button>
-          <button
-            onClick={() => loadPresetScenario('survivor')}
-            className="px-3.5 py-1.5 text-xs font-extrabold rounded-full bg-rose-100 hover:bg-rose-200 text-rose-950 transition-colors border border-rose-300 shadow-2xs cursor-pointer"
-            title="High stakes survival mode on Day 26"
-          >
-            🔥 Survivor (D26)
-          </button>
+          {[
+            { key: 'fresh',    label: '🌱 Fresh', bg: 'var(--mint)',  border: 'var(--mint-accent)',  text: '#0A5C30' },
+            { key: 'mid',      label: '⚡ D15',    bg: 'var(--butter)', border: 'var(--butter-accent)', text: '#7A5E00' },
+            { key: 'survivor', label: '🔥 D26',    bg: 'var(--rose)',  border: 'var(--rose-accent)',  text: '#8B1A2C' },
+          ].map((s) => (
+            <button
+              key={s.key}
+              onClick={() => loadPresetScenario(s.key as Parameters<typeof loadPresetScenario>[0])}
+              className="pill transition-all hover:scale-105 cursor-pointer"
+              style={{ background: s.bg, borderColor: s.border, color: s.text }}
+              title={`Load ${s.label} scenario`}
+            >
+              {s.label}
+            </button>
+          ))}
           <button
             onClick={resetAll}
-            className="p-2 rounded-full bg-zinc-200 hover:bg-zinc-300 text-zinc-700 transition-colors cursor-pointer"
-            title="Reset All Data"
+            className="w-8 h-8 rounded-full flex items-center justify-center cursor-pointer transition-all hover:scale-105"
+            style={{ background: 'var(--canvas-inset)', color: 'var(--text-2)', border: '1px solid var(--border)' }}
+            title="Reset all data"
             aria-label="Reset state"
           >
-            <RotateCcw size={15} />
+            <RotateCcw size={14} />
           </button>
         </div>
       </div>
 
-      {/* 30-Day Interactive Timeline Scrubber */}
-      <div className="mt-4 p-4 bg-white rounded-[24px] border border-black/8 shadow-card flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-zinc-900 text-white text-xs font-bold shadow-2xs">
+      {/* ── Timeline Scrubber Card ─────────────────────────────────────── */}
+      <div
+        className="card p-5 flex flex-col md:flex-row items-center gap-5"
+        style={{ borderRadius: 'var(--r-lg)' }}
+      >
+        {/* Day badge */}
+        <div className="flex items-center gap-3 shrink-0">
+          <div
+            className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm"
+            style={{ background: '#1A1A1A', color: '#fff' }}
+          >
             <Calendar size={14} />
-            <span>Day {currentDay} of 30</span>
+            Day {currentDay} of 30
           </div>
-          <span className="text-xs text-zinc-600 font-semibold">
-            {daysRemaining === 0 ? 'Month Completed!' : `${daysRemaining} days left`}
+          <span className="text-sm font-semibold" style={{ color: 'var(--text-2)' }}>
+            {daysRemaining === 0 ? '🎉 Month complete!' : `${daysRemaining}d left`}
           </span>
 
           {simulation.isActive && (
-            <span className="ml-auto md:ml-2 px-3 py-1 rounded-full text-[11px] font-extrabold bg-amber-300 text-zinc-950 animate-pulse flex items-center gap-1 border border-amber-400">
-              <Sparkles size={12} />
-              SIMULATING WHAT-IF
+            <span
+              className="pill animate-pulse"
+              style={{ background: '#FFF176', borderColor: '#F5C842', color: '#7A5E00' }}
+            >
+              <Sparkles size={11} />
+              Simulating
             </span>
           )}
         </div>
 
-        {/* Day Range Slider */}
-        <div className="flex items-center gap-3 w-full md:w-auto flex-1 max-w-lg px-2">
-          <span className="text-[11px] font-extrabold text-zinc-400">Day 1</span>
-          <input
-            type="range"
-            min={1}
-            max={30}
-            value={currentDay}
-            onChange={(e) => setDay(Number(e.target.value))}
-            className="w-full accent-zinc-900 cursor-pointer h-2.5 bg-zinc-200 rounded-lg appearance-none"
-            aria-label="Select day of the month"
-          />
-          <span className="text-[11px] font-extrabold text-zinc-400">Day 30</span>
+        {/* Slider + progress */}
+        <div className="flex-1 w-full min-w-0 px-2">
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-bold tabular-nums" style={{ color: 'var(--text-3)' }}>D1</span>
+            <div className="relative flex-1">
+              {/* Progress track */}
+              <div
+                className="absolute top-1/2 left-0 h-1.5 rounded-full pointer-events-none -translate-y-1/2 transition-all duration-300"
+                style={{ width: `${progress}%`, background: '#1A1A1A', zIndex: 1 }}
+              />
+              <input
+                type="range"
+                min={1}
+                max={30}
+                value={currentDay}
+                onChange={(e) => setDay(Number(e.target.value))}
+                className="w-full relative"
+                style={{ zIndex: 2, position: 'relative' }}
+                aria-label="Select day of the month"
+              />
+            </div>
+            <span className="text-xs font-bold tabular-nums" style={{ color: 'var(--text-3)' }}>D30</span>
+          </div>
         </div>
 
-        {/* Advance Day CTA */}
+        {/* Advance Day Button */}
         <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           onClick={advanceDay}
           disabled={currentDay >= 30}
-          className="w-full md:w-auto px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 disabled:bg-zinc-300 text-white text-xs font-extrabold flex items-center justify-center gap-2 shadow-2xs transition-all cursor-pointer"
+          className="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          style={{ background: '#1A1A1A', color: '#fff' }}
         >
-          <span>Advance to Day {Math.min(30, currentDay + 1)}</span>
-          <ChevronRight size={14} />
+          Advance to Day {Math.min(30, currentDay + 1)}
+          <ChevronRight size={15} />
         </motion.button>
       </div>
     </header>

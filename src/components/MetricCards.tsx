@@ -3,175 +3,171 @@ import { motion } from 'framer-motion'
 import { Wallet, Flame, ShieldCheck, CreditCard, TrendingUp, TrendingDown } from 'lucide-react'
 import { useFinance } from '../context/useFinance'
 
+interface StatCardProps {
+  label:    string
+  value:    string
+  sub?:     string
+  icon:     React.ReactNode
+  bg:       string
+  accent:   string
+  textClr:  string
+  badge?:   React.ReactNode
+  delay?:   number
+}
+
+const StatCard: React.FC<StatCardProps> = ({
+  label, value, sub, icon, bg, accent, textClr, badge, delay = 0,
+}) => (
+  <motion.div
+    initial={{ opacity: 0, y: 16 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+    whileHover={{ y: -4, boxShadow: 'var(--shadow-lg)' }}
+    className="flex flex-col justify-between rounded-[var(--r-xl)] p-6 sm:p-7 border"
+    style={{
+      background:   bg,
+      borderColor:  accent,
+      boxShadow:    'var(--shadow-card)',
+      minHeight:    180,
+      transition:   'transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s cubic-bezier(0.16,1,0.3,1)',
+    }}
+  >
+    {/* Top row */}
+    <div className="flex items-center justify-between mb-4">
+      <span
+        className="text-[11px] font-extrabold uppercase tracking-widest"
+        style={{ color: textClr, opacity: 0.7 }}
+      >
+        {label}
+      </span>
+      <div
+        className="w-10 h-10 rounded-2xl flex items-center justify-center"
+        style={{ background: 'rgba(255,255,255,0.85)', color: textClr }}
+      >
+        {icon}
+      </div>
+    </div>
+
+    {/* Value */}
+    <div>
+      <div
+        className="font-display font-extrabold tracking-tight leading-none mb-1"
+        style={{
+          fontSize:   'clamp(1.8rem, 4vw, 2.8rem)',
+          color:      'var(--text-1)',
+        }}
+      >
+        {value}
+      </div>
+      {sub && (
+        <p className="text-xs font-semibold mt-1.5" style={{ color: textClr, opacity: 0.75 }}>
+          {sub}
+        </p>
+      )}
+      {badge && <div className="mt-3">{badge}</div>}
+    </div>
+  </motion.div>
+)
+
 export const MetricCards: React.FC = () => {
   const { effectiveMetrics, simulation, currentDay } = useFinance()
   const daysLeft = Math.max(1, 30 - currentDay + 1)
 
+  const deltaBadge = (delta: number, suffix = '') => (
+    <span
+      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold"
+      style={{
+        background: delta < 0 ? '#FFE4E6' : '#D4F5E2',
+        color:      delta < 0 ? '#9F1239' : '#065F46',
+      }}
+    >
+      {delta < 0 ? <TrendingDown size={12} /> : <TrendingUp size={12} />}
+      {delta < 0 ? '-' : '+'}₹{Math.abs(delta)}{suffix}
+    </span>
+  )
+
   return (
-    <section className="w-full" aria-label="Key financial metrics">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {/* Card 1: Liquid Balance */}
-        <motion.div
-          whileHover={{ y: -3 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-          className="rounded-[32px] p-6 sm:p-7 bg-[#FEF9C3] border border-[#FDE047] shadow-card flex flex-col justify-between"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-amber-950">
-              Liquid Balance
-            </span>
-            <div className="w-10 h-10 rounded-2xl bg-white/90 flex items-center justify-center text-amber-900 shadow-2xs">
-              <Wallet size={18} />
-            </div>
-          </div>
+    <section aria-label="Key financial metrics">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
 
-          <div className="mt-4">
-            <div className="flex items-baseline gap-2 flex-wrap">
-              <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-zinc-900 font-display tracking-tight">
-                ₹{effectiveMetrics.currentBalance.toLocaleString('en-IN')}
-              </span>
-              <span className="text-sm text-amber-950/70 font-bold">
-                / ₹10k
-              </span>
-            </div>
-            <p className="text-xs font-semibold text-amber-950/80 mt-1">
-              Active cash pool remaining
-            </p>
-          </div>
+        {/* 1 – Liquid Balance */}
+        <StatCard
+          delay={0}
+          label="Liquid Balance"
+          value={`₹${effectiveMetrics.currentBalance.toLocaleString('en-IN')}`}
+          sub="Active cash pool remaining"
+          icon={<Wallet size={18} />}
+          bg="var(--butter)"
+          accent="var(--butter-accent)"
+          textClr="#7A5E00"
+          badge={
+            simulation.isActive && simulation.impactSummary
+              ? deltaBadge(simulation.impactSummary.balanceDelta, ' if committed')
+              : undefined
+          }
+        />
 
-          {simulation.isActive && simulation.impactSummary && (
-            <div
-              className={`mt-3 text-xs font-extrabold px-3 py-1 rounded-full inline-flex items-center gap-1.5 w-fit ${
-                simulation.impactSummary.balanceDelta < 0
-                  ? 'bg-rose-200 text-rose-950'
-                  : 'bg-emerald-200 text-emerald-950'
-              }`}
-            >
-              {simulation.impactSummary.balanceDelta < 0 ? (
-                <TrendingDown size={13} />
-              ) : (
-                <TrendingUp size={13} />
-              )}
-              <span>
-                {simulation.impactSummary.balanceDelta < 0 ? '-' : '+'}₹
-                {Math.abs(simulation.impactSummary.balanceDelta)} if committed
-              </span>
-            </div>
-          )}
-        </motion.div>
+        {/* 2 – Safe Daily Cap */}
+        <StatCard
+          delay={0.06}
+          label="Safe Daily Cap"
+          value={`₹${effectiveMetrics.dynamicDailyAllowance}`}
+          sub={`Allowance for ${daysLeft} remaining days`}
+          icon={<Flame size={18} />}
+          bg="var(--rose)"
+          accent="var(--rose-accent)"
+          textClr="#9F1239"
+          badge={
+            simulation.isActive && simulation.impactSummary
+              ? deltaBadge(simulation.impactSummary.dailyAllowanceDelta, '/day')
+              : undefined
+          }
+        />
 
-        {/* Card 2: Safe Daily Allowance */}
-        <motion.div
-          whileHover={{ y: -3 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-          className="rounded-[32px] p-6 sm:p-7 bg-[#FFE4E6] border border-[#FDA4AF] shadow-card flex flex-col justify-between"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-rose-950">
-              Safe Daily Cap
-            </span>
-            <div className="w-10 h-10 rounded-2xl bg-white/90 flex items-center justify-center text-rose-900 shadow-2xs">
-              <Flame size={18} />
-            </div>
-          </div>
-
-          <div className="mt-4">
-            <div className="flex items-baseline gap-2 flex-wrap">
-              <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-zinc-900 font-display tracking-tight">
-                ₹{effectiveMetrics.dynamicDailyAllowance}
-              </span>
-              <span className="text-sm text-rose-950/70 font-bold">
-                / day
-              </span>
-            </div>
-            <p className="text-xs font-semibold text-rose-950/80 mt-1">
-              Allowance for {daysLeft} remaining days
-            </p>
-          </div>
-
-          {simulation.isActive && simulation.impactSummary && (
-            <div
-              className={`mt-3 text-xs font-extrabold px-3 py-1 rounded-full inline-flex items-center gap-1.5 w-fit ${
-                simulation.impactSummary.dailyAllowanceDelta < 0
-                  ? 'bg-rose-200 text-rose-950'
-                  : 'bg-emerald-200 text-emerald-950'
-              }`}
-            >
-              <span>
-                {simulation.impactSummary.dailyAllowanceDelta < 0 ? 'Drops by ' : 'Adds '}
-                ₹{Math.abs(simulation.impactSummary.dailyAllowanceDelta)}/day
-              </span>
-            </div>
-          )}
-        </motion.div>
-
-        {/* Card 3: Survival Probability */}
-        <motion.div
-          whileHover={{ y: -3 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-          className="rounded-[32px] p-6 sm:p-7 bg-[#DCFCE7] border border-[#86EFAC] shadow-card flex flex-col justify-between"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-950">
-              Survival Odds
-            </span>
-            <div className="w-10 h-10 rounded-2xl bg-white/90 flex items-center justify-center text-emerald-900 shadow-2xs">
-              <ShieldCheck size={18} />
-            </div>
-          </div>
-
-          <div className="mt-4">
-            <div className="flex items-baseline gap-2.5 flex-wrap">
-              <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-zinc-900 font-display tracking-tight">
-                {effectiveMetrics.survivalProbability}%
-              </span>
-              <span
-                className={`text-xs font-extrabold px-2.5 py-0.5 rounded-full ${
+        {/* 3 – Survival Odds */}
+        <StatCard
+          delay={0.12}
+          label="Survival Odds"
+          value={`${effectiveMetrics.survivalProbability}%`}
+          sub={`Projected D30: ₹${effectiveMetrics.projectedEndBalance.toLocaleString('en-IN')}`}
+          icon={<ShieldCheck size={18} />}
+          bg="var(--mint)"
+          accent="var(--mint-accent)"
+          textClr="#065F46"
+          badge={
+            <span
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-extrabold"
+              style={{
+                background:
                   effectiveMetrics.riskLevel === 'Safe'
-                    ? 'bg-emerald-200 text-emerald-900'
+                    ? '#D4F5E2'
                     : effectiveMetrics.riskLevel === 'Moderate'
-                    ? 'bg-amber-200 text-amber-900'
-                    : 'bg-rose-200 text-rose-900'
-                }`}
-              >
-                {effectiveMetrics.riskLevel}
-              </span>
-            </div>
-            <p className="text-xs font-semibold text-emerald-950/80 mt-1">
-              Projected D30: ₹{effectiveMetrics.projectedEndBalance.toLocaleString('en-IN')}
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Card 4: Fixed Liabilities */}
-        <motion.div
-          whileHover={{ y: -3 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-          className="rounded-[32px] p-6 sm:p-7 bg-[#EDE9FE] border border-[#C4B5FD] shadow-card flex flex-col justify-between"
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-purple-950">
-              Fixed Obligations
+                    ? '#FFF7C2'
+                    : '#FFE4E6',
+                color:
+                  effectiveMetrics.riskLevel === 'Safe'
+                    ? '#065F46'
+                    : effectiveMetrics.riskLevel === 'Moderate'
+                    ? '#7A5E00'
+                    : '#9F1239',
+              }}
+            >
+              {effectiveMetrics.riskLevel} Risk
             </span>
-            <div className="w-10 h-10 rounded-2xl bg-white/90 flex items-center justify-center text-purple-900 shadow-2xs">
-              <CreditCard size={18} />
-            </div>
-          </div>
+          }
+        />
 
-          <div className="mt-4">
-            <div className="flex items-baseline gap-2 flex-wrap">
-              <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-zinc-900 font-display tracking-tight">
-                ₹{effectiveMetrics.unpaidCommitmentsTotal.toLocaleString('en-IN')}
-              </span>
-              <span className="text-sm text-purple-950/70 font-bold">
-                reserved
-              </span>
-            </div>
-            <p className="text-xs font-semibold text-purple-950/80 mt-1">
-              Protected reserve for rent & Wi-Fi
-            </p>
-          </div>
-        </motion.div>
+        {/* 4 – Fixed Obligations */}
+        <StatCard
+          delay={0.18}
+          label="Fixed Obligations"
+          value={`₹${effectiveMetrics.unpaidCommitmentsTotal.toLocaleString('en-IN')}`}
+          sub="Reserved for rent & Wi-Fi"
+          icon={<CreditCard size={18} />}
+          bg="var(--lilac)"
+          accent="var(--lilac-accent)"
+          textClr="#4C1D95"
+        />
       </div>
     </section>
   )

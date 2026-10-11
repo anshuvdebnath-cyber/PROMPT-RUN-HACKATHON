@@ -22,9 +22,9 @@ export const SurpriseEvents: React.FC = () => {
   }
 
   return (
-    <div className="card-premium p-6 sm:p-7 bg-white border border-black/8 shadow-card flex flex-col justify-between h-full">
+    <div className="card p-6 sm:p-7 flex flex-col justify-between h-full" style={{ background: 'var(--canvas-card)' }}>
       <div>
-        <div className="flex items-center justify-between pb-4 border-b border-black/8">
+        <div className="flex items-center justify-between pb-4 border-b" style={{ borderColor: 'var(--border)' }}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-rose-100 text-rose-800 flex items-center justify-center font-bold shadow-2xs">
               <Zap size={20} />

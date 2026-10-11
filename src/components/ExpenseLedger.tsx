@@ -86,7 +86,7 @@ export const ExpenseLedger: React.FC = () => {
                   placeholder="e.g. Chai, Metro pass, Treat"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl text-xs font-medium bg-white border border-black/10 focus:outline-hidden focus:ring-2 focus:ring-zinc-900"
+                  className="w-full px-3 py-2 rounded-xl text-xs font-medium bg-white border border-black/10 focus:outline-none focus:ring-2 focus:ring-zinc-900"
                 />
               </div>
 
@@ -102,7 +102,7 @@ export const ExpenseLedger: React.FC = () => {
                   placeholder="Amount"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl text-xs font-bold bg-white border border-black/10 focus:outline-hidden focus:ring-2 focus:ring-zinc-900"
+                  className="w-full px-3 py-2 rounded-xl text-xs font-bold bg-white border border-black/10 focus:outline-none focus:ring-2 focus:ring-zinc-900"
                 />
               </div>
 
@@ -113,7 +113,7 @@ export const ExpenseLedger: React.FC = () => {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value as TransactionCategory)}
-                  className="w-full px-3 py-2 rounded-xl text-xs font-medium bg-white border border-black/10 focus:outline-hidden"
+                  className="w-full px-3 py-2 rounded-xl text-xs font-medium bg-white border border-black/10 focus:outline-none"
                 >
                   {categories.map((cat) => (
                     <option key={cat} value={cat}>
@@ -130,7 +130,7 @@ export const ExpenseLedger: React.FC = () => {
                 <select
                   value={type}
                   onChange={(e) => setType(e.target.value as 'expense' | 'income')}
-                  className="w-full px-3 py-2 rounded-xl text-xs font-bold bg-white border border-black/10 focus:outline-hidden"
+                  className="w-full px-3 py-2 rounded-xl text-xs font-bold bg-white border border-black/10 focus:outline-none"
                 >
                   <option value="expense">Expense (-)</option>
                   <option value="income">Income (+)</option>
@@ -212,7 +212,7 @@ export const ExpenseLedger: React.FC = () => {
                     <span className="text-[10px] font-semibold text-zinc-400">
                       Day {tx.day}
                     </span>
-                    <span className="text-[10px] font-bold px-2 py-0.2 rounded-full bg-zinc-100 text-zinc-600">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600">
                       {tx.category}
                     </span>
                   </div>

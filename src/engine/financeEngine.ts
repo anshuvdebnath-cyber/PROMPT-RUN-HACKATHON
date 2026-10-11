@@ -103,9 +103,6 @@ export function evaluateFinancialHealth(
   savingsAmount: number,
   savingsTarget: number
 ): FinancialHealthMetrics {
-  const daysElapsed = Math.max(1, currentDay)
-  const dailyBurnRate = Math.round(spentSoFar / daysElapsed)
-
   const { totalObligations } = calculateRemainingObligations(
     currentDay,
     commitments,
@@ -118,6 +115,13 @@ export function evaluateFinancialHealth(
     savingsAmount,
     currentDay
   )
+
+  const daysElapsed = Math.max(1, currentDay)
+  const rawBurnRate = spentSoFar / daysElapsed
+  // Early in the month (first 7 days), blend actual burn rate with recommended daily allowance pace
+  const burnWeight = Math.min(1, daysElapsed / 7)
+  const targetPace = dynamicDailyAllowance > 0 ? dynamicDailyAllowance : 120
+  const dailyBurnRate = Math.round(burnWeight * rawBurnRate + (1 - burnWeight) * targetPace)
 
   const projectedEndBalance = calculateProjectedEndBalance(
     balance,

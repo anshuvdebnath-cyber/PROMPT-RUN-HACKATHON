@@ -126,7 +126,7 @@ export const WhatIfSimulator: React.FC = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Buying concert tickets"
-            className="w-full px-3.5 py-2 rounded-xl text-sm font-medium bg-white border border-black/10 focus:outline-hidden focus:ring-2 focus:ring-zinc-900"
+            className="w-full px-3.5 py-2 rounded-xl text-sm font-medium bg-white border border-black/10 focus:outline-none focus:ring-2 focus:ring-zinc-900"
           />
         </div>
 
@@ -141,7 +141,7 @@ export const WhatIfSimulator: React.FC = () => {
             step={50}
             value={amount}
             onChange={(e) => setAmount(Number(e.target.value))}
-            className="w-full px-3.5 py-2 rounded-xl text-sm font-bold bg-white border border-black/10 focus:outline-hidden focus:ring-2 focus:ring-zinc-900"
+            className="w-full px-3.5 py-2 rounded-xl text-sm font-bold bg-white border border-black/10 focus:outline-none focus:ring-2 focus:ring-zinc-900"
           />
         </div>
 
@@ -152,7 +152,7 @@ export const WhatIfSimulator: React.FC = () => {
           <select
             value={type}
             onChange={(e) => setType(e.target.value as 'expense' | 'income')}
-            className="w-full px-3 py-2 rounded-xl text-xs font-bold bg-white border border-black/10 focus:outline-hidden"
+            className="w-full px-3 py-2 rounded-xl text-xs font-bold bg-white border border-black/10 focus:outline-none"
           >
             <option value="expense">Expense (-)</option>
             <option value="income">Inflow (+)</option>

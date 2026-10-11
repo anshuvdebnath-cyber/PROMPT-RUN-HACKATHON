@@ -138,7 +138,6 @@ export const MascotCompanion: React.FC = () => {
   }, [])
 
   const isDraggingRef = useRef(false)
-  const [isWobbling, setIsWobbling] = useState(false)
 
   // Tapping the mascot cycles to the next thought and pops the cloud
   const handleMascotTap = () => {
@@ -155,18 +154,13 @@ export const MascotCompanion: React.FC = () => {
       dragElastic={0.06}
       onDragStart={() => {
         isDraggingRef.current = true
-        setIsWobbling(false)
       }}
       onDragEnd={() => {
-        setIsWobbling(true)
-        setTimeout(() => {
-          setIsWobbling(false)
-        }, 750)
         setTimeout(() => {
           isDraggingRef.current = false
         }, 140)
       }}
-      whileDrag={{ scale: 1.06, cursor: 'grabbing' }}
+      whileDrag={{ scale: 1.05, cursor: 'grabbing' }}
       className="fixed bottom-22 right-3 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end pointer-events-auto select-none touch-none cursor-grab"
     >
       {/* Movie-style Thinking Cloud Pop-up */}
@@ -252,32 +246,10 @@ export const MascotCompanion: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Floating Mascot with jelly wobble physics when dragged or released */}
+      {/* Floating Mascot */}
       <motion.div
-        animate={
-          isWobbling
-            ? {
-                rotate: [0, -18, 16, -10, 7, -3, 0],
-                scaleX: [1, 1.25, 0.85, 1.12, 0.95, 1.03, 1],
-                scaleY: [1, 0.82, 1.18, 0.92, 1.06, 0.98, 1],
-              }
-            : {
-                y: [0, -5, 0],
-                rotate: 0,
-                scaleX: 1,
-                scaleY: 1,
-              }
-        }
-        transition={
-          isWobbling
-            ? {
-                duration: 0.75,
-                ease: 'easeInOut',
-              }
-            : {
-                y: { repeat: Infinity, duration: 3, ease: 'easeInOut' },
-              }
-        }
+        animate={{ y: [0, -5, 0] }}
+        transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.94 }}
         onClick={handleMascotTap}

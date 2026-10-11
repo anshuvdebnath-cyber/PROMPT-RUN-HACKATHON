@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
+import { Sparkles, LineChart, CreditCard, ShieldCheck, ReceiptText } from 'lucide-react'
 import { FinanceProvider } from './context/FinanceContext'
-import { Sidebar } from './components/layout/Sidebar'
-import { HeaderBar } from './components/dashboard/HeaderBar'
-import { HeroVibeCard } from './components/dashboard/HeroVibeCard'
-import { StatCards } from './components/dashboard/StatCards'
+import { Navbar } from './components/Navbar'
+import { HeroVibeBanner } from './components/HeroVibeBanner'
+import { MetricCards } from './components/MetricCards'
 import { WhatIfSimulator } from './components/WhatIfSimulator'
 import { CashflowChart } from './components/CashflowChart'
 import { CommitmentsManager } from './components/CommitmentsManager'
@@ -19,23 +19,86 @@ export const AppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('simulator')
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] text-zinc-900 flex flex-col lg:flex-row pb-20 lg:pb-0">
-      {/* Permanent Left Sidebar on Desktop / Bottom Dock on Mobile */}
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+    <div className="min-h-screen bg-[#FAF7F2] text-zinc-900 w-full px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex flex-col justify-between">
+      <div className="w-full max-w-[1600px] mx-auto space-y-6">
+        {/* Top Navigation & Timeline Scrubber */}
+        <Navbar />
 
-      {/* Main Responsive Viewport */}
-      <div className="flex-1 min-w-0 px-4 sm:px-8 py-6 sm:py-8 max-w-6xl mx-auto w-full">
-        {/* Top Header Sprint Bar */}
-        <HeaderBar />
+        {/* Hero Banner: Animated Squircle Mascot & Radial Health Score Ring */}
+        <HeroVibeBanner />
 
-        {/* Hero Mascot & Fin-Vibe Check */}
-        <HeroVibeCard />
+        {/* 4 Pastel Core Financial Metric Cards */}
+        <MetricCards />
 
-        {/* 4 Aligned Pastel KPI Cards */}
-        <StatCards />
+        {/* Full-Width Workspace Navigation Tabs */}
+        <div className="w-full pt-4">
+          <div className="flex items-center justify-between border-b border-black/8 pb-4 flex-wrap gap-3">
+            <div className="flex items-center gap-2 overflow-x-auto py-1">
+              <button
+                onClick={() => setActiveTab('simulator')}
+                className={`px-5 py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+                  activeTab === 'simulator'
+                    ? 'bg-zinc-900 text-white shadow-sm'
+                    : 'bg-white hover:bg-zinc-100 text-zinc-600 border border-black/8'
+                }`}
+              >
+                <Sparkles size={15} className={activeTab === 'simulator' ? 'text-amber-400' : ''} />
+                <span>What-If Simulator</span>
+              </button>
 
-        {/* Active Workspace View */}
-        <main className="w-full mt-6" aria-label="Main Workspace View">
+              <button
+                onClick={() => setActiveTab('runway')}
+                className={`px-5 py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+                  activeTab === 'runway'
+                    ? 'bg-zinc-900 text-white shadow-sm'
+                    : 'bg-white hover:bg-zinc-100 text-zinc-600 border border-black/8'
+                }`}
+              >
+                <LineChart size={15} className={activeTab === 'runway' ? 'text-pink-400' : ''} />
+                <span>Runway Forecast</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('commitments')}
+                className={`px-5 py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+                  activeTab === 'commitments'
+                    ? 'bg-zinc-900 text-white shadow-sm'
+                    : 'bg-white hover:bg-zinc-100 text-zinc-600 border border-black/8'
+                }`}
+              >
+                <CreditCard size={15} className={activeTab === 'commitments' ? 'text-purple-400' : ''} />
+                <span>Bills & Subscriptions</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('savings')}
+                className={`px-5 py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+                  activeTab === 'savings'
+                    ? 'bg-zinc-900 text-white shadow-sm'
+                    : 'bg-white hover:bg-zinc-100 text-zinc-600 border border-black/8'
+                }`}
+              >
+                <ShieldCheck size={15} className={activeTab === 'savings' ? 'text-emerald-400' : ''} />
+                <span>Savings & Shocks</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('ledger')}
+                className={`px-5 py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+                  activeTab === 'ledger'
+                    ? 'bg-zinc-900 text-white shadow-sm'
+                    : 'bg-white hover:bg-zinc-100 text-zinc-600 border border-black/8'
+                }`}
+              >
+                <ReceiptText size={15} className={activeTab === 'ledger' ? 'text-cyan-400' : ''} />
+                <span>Expense Ledger</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Workspace Stage */}
+        <main className="w-full pt-2" aria-label="Active workspace content">
           {activeTab === 'simulator' && (
             <div className="w-full">
               <WhatIfSimulator />
@@ -67,23 +130,23 @@ export const AppContent: React.FC = () => {
             </div>
           )}
         </main>
-
-        {/* Toast Notifications */}
-        <ToastContainer />
-
-        {/* Day 30 Victory Modal */}
-        <SurvivalCelebration />
-
-        {/* Footer */}
-        <footer className="w-full mt-16 pt-6 border-t border-black/8 text-center text-xs text-zinc-500">
-          <p className="font-extrabold text-zinc-700">
-            Broke But Functional — Survive the Month • Gen Z Personal Finance Challenge
-          </p>
-          <p className="mt-1 text-[11px] text-zinc-400">
-            Prompt Run Hackathon · Engineered for High-Fidelity Responsive Design
-          </p>
-        </footer>
       </div>
+
+      {/* Toast Notifications */}
+      <ToastContainer />
+
+      {/* Day 30 Victory Modal */}
+      <SurvivalCelebration />
+
+      {/* Full-Screen Footer */}
+      <footer className="w-full mt-16 pt-6 border-t border-black/8 text-center text-xs text-zinc-500">
+        <p className="font-extrabold text-zinc-700">
+          Broke But Functional — Survive the Month • Gen Z Personal Finance Challenge
+        </p>
+        <p className="mt-1 text-[11px] text-zinc-400">
+          Prompt Run Hackathon · Engineered for Full-Screen Responsive Editorial Design
+        </p>
+      </footer>
     </div>
   )
 }

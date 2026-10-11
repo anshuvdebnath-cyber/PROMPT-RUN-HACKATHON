@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Sparkles, LineChart, CreditCard, Zap, LayoutGrid } from 'lucide-react'
+import { Sparkles, LineChart, CreditCard, ShieldCheck, ReceiptText } from 'lucide-react'
 import { FinanceProvider } from './context/FinanceContext'
 import { Navbar } from './components/Navbar'
 import { HeroVibeBanner } from './components/HeroVibeBanner'
@@ -13,143 +13,118 @@ import { ExpenseLedger } from './components/ExpenseLedger'
 import { ToastContainer } from './components/ToastContainer'
 import { SurvivalCelebration } from './components/SurvivalCelebration'
 
-type ActiveTab = 'simulator' | 'runway' | 'commitments' | 'activity' | 'all'
+type ActiveTab = 'simulator' | 'runway' | 'commitments' | 'savings' | 'ledger'
 
 export const AppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('simulator')
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] text-zinc-900 pb-12 w-full px-4 sm:px-8 max-w-[1550px] mx-auto">
-      {/* Top Navigation & Timeline Scrubber */}
+    <div className="min-h-screen bg-[#FAF7F2] text-zinc-900 pb-16 w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      {/* Top Header & Day Progress */}
       <Navbar />
 
-      {/* Hero Emotional Mascot Banner & Health Ring */}
+      {/* Hero Mascot Banner & Health Score Ring */}
       <HeroVibeBanner />
 
-      {/* Core Dynamic Financial Metric Cards */}
+      {/* 4 Unclipped Pastel Metric Cards */}
       <MetricCards />
 
-      {/* Workspace Tabs (Decluttered Navigation) */}
-      <div className="my-5 flex items-center justify-between border-b border-black/8 pb-3 flex-wrap gap-2">
-        <div className="flex items-center gap-1.5 overflow-x-auto py-1">
-          <button
-            onClick={() => setActiveTab('simulator')}
-            className={`px-4 py-2 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all ${
-              activeTab === 'simulator'
-                ? 'bg-zinc-900 text-white shadow-sm scale-102'
-                : 'bg-white hover:bg-zinc-100 text-zinc-600 border border-black/5'
-            }`}
-          >
-            <Sparkles size={14} className={activeTab === 'simulator' ? 'text-amber-400' : ''} />
-            <span>What-If Simulator</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('runway')}
-            className={`px-4 py-2 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all ${
-              activeTab === 'runway'
-                ? 'bg-zinc-900 text-white shadow-sm scale-102'
-                : 'bg-white hover:bg-zinc-100 text-zinc-600 border border-black/5'
-            }`}
-          >
-            <LineChart size={14} className={activeTab === 'runway' ? 'text-pink-400' : ''} />
-            <span>Runway & Goals</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('commitments')}
-            className={`px-4 py-2 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all ${
-              activeTab === 'commitments'
-                ? 'bg-zinc-900 text-white shadow-sm scale-102'
-                : 'bg-white hover:bg-zinc-100 text-zinc-600 border border-black/5'
-            }`}
-          >
-            <CreditCard size={14} className={activeTab === 'commitments' ? 'text-purple-400' : ''} />
-            <span>Bills & Subscriptions</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('activity')}
-            className={`px-4 py-2 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all ${
-              activeTab === 'activity'
-                ? 'bg-zinc-900 text-white shadow-sm scale-102'
-                : 'bg-white hover:bg-zinc-100 text-zinc-600 border border-black/5'
-            }`}
-          >
-            <Zap size={14} className={activeTab === 'activity' ? 'text-amber-400' : ''} />
-            <span>Life Shocks & Ledger</span>
-          </button>
-        </div>
+      {/* Decluttered Pill Tab Navigation */}
+      <nav
+        className="my-6 p-1.5 bg-white/90 backdrop-blur-md rounded-2xl border border-black/8 shadow-2xs flex items-center justify-start sm:justify-center overflow-x-auto gap-1"
+        aria-label="Workspace view selector"
+      >
+        <button
+          onClick={() => setActiveTab('simulator')}
+          className={`px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeTab === 'simulator'
+              ? 'bg-zinc-900 text-white shadow-xs'
+              : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+          }`}
+        >
+          <Sparkles size={14} className={activeTab === 'simulator' ? 'text-amber-400' : ''} />
+          <span>What-If Simulator</span>
+        </button>
 
         <button
-          onClick={() => setActiveTab(activeTab === 'all' ? 'simulator' : 'all')}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
-            activeTab === 'all'
-              ? 'bg-amber-300 text-zinc-900 border border-amber-400'
-              : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-600'
+          onClick={() => setActiveTab('runway')}
+          className={`px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeTab === 'runway'
+              ? 'bg-zinc-900 text-white shadow-xs'
+              : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
           }`}
-          title="Toggle split dashboard overview"
         >
-          <LayoutGrid size={13} />
-          <span>{activeTab === 'all' ? 'Focus Tab View' : 'All-in-One Grid'}</span>
+          <LineChart size={14} className={activeTab === 'runway' ? 'text-pink-400' : ''} />
+          <span>Runway Forecast</span>
         </button>
-      </div>
 
-      {/* Main Workspace (Clean, Spacious & Responsive) */}
+        <button
+          onClick={() => setActiveTab('commitments')}
+          className={`px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeTab === 'commitments'
+              ? 'bg-zinc-900 text-white shadow-xs'
+              : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+          }`}
+        >
+          <CreditCard size={14} className={activeTab === 'commitments' ? 'text-purple-400' : ''} />
+          <span>Bills & Subscriptions</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('savings')}
+          className={`px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeTab === 'savings'
+              ? 'bg-zinc-900 text-white shadow-xs'
+              : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+          }`}
+        >
+          <ShieldCheck size={14} className={activeTab === 'savings' ? 'text-emerald-400' : ''} />
+          <span>Savings & Shocks</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('ledger')}
+          className={`px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            activeTab === 'ledger'
+              ? 'bg-zinc-900 text-white shadow-xs'
+              : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+          }`}
+        >
+          <ReceiptText size={14} className={activeTab === 'ledger' ? 'text-cyan-400' : ''} />
+          <span>Expense Ledger</span>
+        </button>
+      </nav>
+
+      {/* Main Responsive Workspace */}
       <main className="w-full mt-2">
         {activeTab === 'simulator' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <div className="lg:col-span-8">
-              <WhatIfSimulator />
-            </div>
-            <div className="lg:col-span-4 flex flex-col gap-5">
-              <SavingsTracker />
-              <SurpriseEvents />
-            </div>
+          <div className="w-full">
+            <WhatIfSimulator />
           </div>
         )}
 
         {activeTab === 'runway' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <div className="lg:col-span-8">
-              <CashflowChart />
-            </div>
-            <div className="lg:col-span-4">
-              <SavingsTracker />
-            </div>
+          <div className="w-full">
+            <CashflowChart />
           </div>
         )}
 
         {activeTab === 'commitments' && (
-          <div className="max-w-4xl mx-auto">
+          <div className="w-full">
             <CommitmentsManager />
           </div>
         )}
 
-        {activeTab === 'activity' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <div className="lg:col-span-6">
-              <SurpriseEvents />
-            </div>
-            <div className="lg:col-span-6">
-              <ExpenseLedger />
-            </div>
+        {activeTab === 'savings' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            <SavingsTracker />
+            <SurpriseEvents />
           </div>
         )}
 
-        {activeTab === 'all' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <section className="lg:col-span-7 flex flex-col gap-6" aria-label="Simulation and Projections">
-              <WhatIfSimulator />
-              <CashflowChart />
-              <SavingsTracker />
-            </section>
-
-            <aside className="lg:col-span-5 flex flex-col gap-6" aria-label="Commitments and Ledger">
-              <CommitmentsManager />
-              <SurpriseEvents />
-              <ExpenseLedger />
-            </aside>
+        {activeTab === 'ledger' && (
+          <div className="w-full">
+            <ExpenseLedger />
           </div>
         )}
       </main>
@@ -157,12 +132,12 @@ export const AppContent: React.FC = () => {
       {/* Toast Notifications */}
       <ToastContainer />
 
-      {/* Day 30 Final Celebration / Debrief Modal */}
+      {/* Day 30 Victory Celebration Modal */}
       <SurvivalCelebration />
 
       {/* Footer */}
-      <footer className="w-full mt-14 pt-6 border-t border-black/8 text-center text-xs text-zinc-500">
-        <p className="font-semibold text-zinc-600">
+      <footer className="w-full mt-16 pt-6 border-t border-black/8 text-center text-xs text-zinc-500">
+        <p className="font-semibold text-zinc-700">
           Broke But Functional — Survive the Month • Gen Z Personal Finance Simulation
         </p>
         <p className="mt-1 text-[11px] text-zinc-400">

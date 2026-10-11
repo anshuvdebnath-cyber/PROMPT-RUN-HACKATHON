@@ -1,291 +1,407 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Send, Sparkles } from 'lucide-react'
+import { X, Sparkles, Flame, Laugh, HelpCircle, Utensils, MessageCircle } from 'lucide-react'
 import { useFinance } from '../context/useFinance'
 import { Mascot } from './Mascot'
 import { MascotMood } from '../types/finance'
 
-interface Message {
-  sender: 'bot' | 'user'
+interface SpeechItem {
   text: string
-  mood?: MascotMood
+  mood: MascotMood
+  tag: string
 }
 
-const MONEY_JOKES = [
-  'My bank account is like a gym membership: I keep paying for it, but I never see any gains. 😭',
-  'I told my wallet we are going on a diet. It took it literally and is now starving! 💀',
-  "My toxic trait is whispering 'it's only ₹150' fifty times a day until my card declines. 💳",
-  "Checking my bank balance before checking out like: 'I pretend I do not see it.' 🙈",
-  "Money doesn't buy happiness, but it buys iced coffee which is basically the same thing. ☕",
+const HINGLISH_JOKES: SpeechItem[] = [
+  {
+    text: 'Mera bank account aur mera gym: dono me mahino se koi gains nahi dikh rahe! 😭',
+    mood: 'hurt',
+    tag: '🤡 Paisa Joke',
+  },
+  {
+    text: 'Paisa haath ka mail hota hai... isliye mere haath hamesha sanitized rehte hain! 🧼',
+    mood: 'joyful',
+    tag: '🤡 Clean Wallet',
+  },
+  {
+    text: "Dost ne bola 'Bro treat de'... Maine bola 'Bhai filter ka paani piyega ya direct tap water?' 🚰",
+    mood: 'stressed',
+    tag: '🤡 Treat Trauma',
+  },
+  {
+    text: 'Card swipe karne se pehle jo OTP aata hai, wahi ek message hai jo dil cheer deta hai! 💔',
+    mood: 'hurt',
+    tag: '🤡 OTP Trauma',
+  },
+  {
+    text: "Bhagwan ne sab kuch diya... bas 'Insufficient Balance' wala popup hatana bhool gaya! 📱",
+    mood: 'angry',
+    tag: '🤡 Bank Reality',
+  },
+  {
+    text: 'Salary credit hoti hai 1 second me, aur gayab hoti hai 0.5 second me... Bro speed dekh rahe ho? 🚀',
+    mood: 'stressed',
+    tag: '🤡 Salary Speed',
+  },
+  {
+    text: "Main: 'Aaj se paise bachaunga'. Zomato 50% Off notification: 'Are you sure about that bro?' 🍕",
+    mood: 'angry',
+    tag: '🤡 Zomato Trap',
+  },
+  {
+    text: 'Wallet kholte hi lagta hai CBI ka raid pad chuka hai... poora khali boss! 📉',
+    mood: 'hurt',
+    tag: '🤡 Empty Vault',
+  },
+]
+
+const HINGLISH_ROASTS: SpeechItem[] = [
+  {
+    text: 'Bhai aukaat se bahar jaake iced coffee peene se ameer nahi banoge, bas gareeb lagoge! ☕',
+    mood: 'angry',
+    tag: '🔥 Reality Check',
+  },
+  {
+    text: 'Wallet me chillar nahi bacha aur sapne Ambani wale! Thoda grounded ho ja mere bhai! 🤡',
+    mood: 'hurt',
+    tag: '🔥 Brutal Roast',
+  },
+  {
+    text: "₹200 ke momos kha ke bolte ho 'Desh ki economy kharab chal rahi hai'... Bhai tu kharab kar raha hai! 🥟",
+    mood: 'angry',
+    tag: '🔥 Momos Roast',
+  },
+  {
+    text: 'Bhai month ke pehle hafte me King Kohli, aur aakhri hafte me Maggi pe zinda! Kab sudhrega tu? 🍜',
+    mood: 'stressed',
+    tag: '🔥 Month-End Truth',
+  },
+  {
+    text: "Delulu pro max: 'Agli salary se pakka 50% save karunga'. Bhai tu khud se jhoot bolna band kar! 🤥",
+    mood: 'stressed',
+    tag: '🔥 Delulu Check',
+  },
+  {
+    text: 'Bhai pocket me ₹150 bache hain aur Swiggy cart me ₹650 ki Biryani add kar ke baitha hai! BFFR! 🍗',
+    mood: 'angry',
+    tag: '🔥 Swiggy Side-Eye',
+  },
+]
+
+const HINGLISH_GYAN: SpeechItem[] = [
+  {
+    text: 'Very demure, very mindful... Auto wale se ₹20 bargain karke bacha liye! Peak financial rizz! 🛺',
+    mood: 'grateful',
+    tag: '✨ Mindful Gyan',
+  },
+  {
+    text: 'Ameer banne chale the, ₹10 ki cutting chai pe discuss kar rahe hain Elon Musk ka stock! ☕',
+    mood: 'joyful',
+    tag: '✨ Chai Wisdom',
+  },
+  {
+    text: 'No cap bhai, agar aaj fokat ka kharcha control kar liya toh weekend pe guilt-free chill maaroge! ✨',
+    mood: 'excited',
+    tag: '✨ No Cap Advice',
+  },
+  {
+    text: 'Golden Rule: Jab tak card decline na ho, tab tak delulu ameer hain hum! Par please card bachao! 💳',
+    mood: 'grateful',
+    tag: '✨ Life Hack',
+  },
+  {
+    text: 'Bhai balance baar baar check mat kar, dard hota hai. Bas screen lock kar aur deep breath le! 🧘',
+    mood: 'joyful',
+    tag: '✨ Peace Mindset',
+  },
+  {
+    text: 'Riyal talk: Agar discount mil raha hai par zaroorat nahi hai, toh 100% loss hai boss! 🛑',
+    mood: 'stressed',
+    tag: '✨ Riyal Math',
+  },
 ]
 
 export const MascotCompanion: React.FC = () => {
-  const { effectiveMetrics } = useFinance()
-  const [isOpen, setIsOpen] = useState(false)
-  const [customInput, setCustomInput] = useState('')
-  const [botMood, setBotMood] = useState<MascotMood>(effectiveMetrics.mascotMood)
+  const { effectiveMetrics, transactions, currentDay, simulation } = useFinance()
+  const [isOpen, setIsOpen] = useState(true)
+  const [currentSpeech, setCurrentSpeech] = useState<SpeechItem>({
+    text: 'Yo bhai! BrokeBot here. Live tracking chalu hai. Koi bhi kharcha karo ya tap karo, main reality check dunga! 😎',
+    mood: effectiveMetrics.mascotMood,
+    tag: '🤖 Pocket Saathi',
+  })
 
-  const [conversation, setConversation] = useState<Message[]>([
-    {
-      sender: 'bot',
-      text: `Yo! I'm BrokeBot, your Gen Z finance wingman. You've got ₹${effectiveMetrics.currentBalance.toLocaleString('en-IN')} in the bank. Need a vibe check or want to roast your spending?`,
-      mood: effectiveMetrics.mascotMood,
-    },
-  ])
+  // Track state changes to trigger automatic reactive popups
+  const prevTxCount = useRef(transactions.length)
+  const prevDay = useRef(currentDay)
+  const prevSimActive = useRef(simulation.isActive)
 
-  const balance = effectiveMetrics.currentBalance
-  const allowance = effectiveMetrics.dynamicDailyAllowance
-  const spent = effectiveMetrics.spentSoFar
-  const risk = effectiveMetrics.riskLevel
-
-  const handleAskPrompt = (type: 'roast' | 'zomato' | 'cooked' | 'joke' | 'hypeman') => {
-    let userText = ''
-    let botReply = ''
-    let nextMood: MascotMood = 'joyful'
-
-    if (type === 'roast') {
-      userText = 'Roast my budget 🔥'
-      if (balance <= 0) {
-        nextMood = 'hurt'
-        botReply = `Down catastrophic! Broke boi balance is ₹0. You couldn't even afford 1-ply tissue right now. Instant ramen emergency! 😭`
-      } else if (risk === 'Critical Doom' || spent > 7000) {
-        nextMood = 'angry'
-        botReply = `Major side-eye! You torched ₹${spent.toLocaleString('en-IN')} already. Your wallet is screaming in the trenches, bestie. Put the card away! 🚨`
-      } else if (allowance < 140) {
-        nextMood = 'stressed'
-        botReply = `You're sweating bullets with a ₹${allowance}/day cap! One rogue bubble tea and your whole monthly budget folds like a cheap lawn chair. 🧋`
-      } else {
-        nextMood = 'grateful'
-        botReply = `Honestly? Not terrible! ₹${balance.toLocaleString('en-IN')} still alive. But don't get delulu thinking you're Elon Musk. Stay humble! 💅`
+  // Auto react when an expense is added
+  useEffect(() => {
+    if (transactions.length > prevTxCount.current) {
+      const latest = transactions[transactions.length - 1]
+      if (latest) {
+        const reactions: SpeechItem[] = [
+          {
+            text: `Arrey bhai! Naya kharcha '₹${latest.amount.toLocaleString('en-IN')} on ${latest.title}'? Pocket bol rahi hai 'Reham kar de bhai!' 💸`,
+            mood: 'hurt',
+            tag: '🚨 Kharcha Alert!',
+          },
+          {
+            text: `Bhai ₹${latest.amount.toLocaleString('en-IN')} gayab! Swiggy tha ya shopping? Thoda demure ban na seekho! 😭`,
+            mood: 'stressed',
+            tag: '🚨 4K Me Pakda Gaya',
+          },
+          {
+            text: `Kharcha noted boss! Par wallet ki halat dekh ke lag raha hai Maggi emergency aane wali hai! 🍜`,
+            mood: 'angry',
+            tag: '🚨 Budget Shock',
+          },
+        ]
+        const pick = reactions[Math.floor(Math.random() * reactions.length)]
+        const timer = setTimeout(() => {
+          setCurrentSpeech(pick)
+          setIsOpen(true)
+        }, 10)
+        return () => clearTimeout(timer)
       }
-    } else if (type === 'zomato') {
-      userText = 'Can I order food tonight? 🍕'
-      if (allowance >= 200) {
-        nextMood = 'joyful'
-        botReply = `Green light bestie! Your ₹${allowance}/day cap can handle a ₹160 shawarma or roll. Just don't add ₹300 gourmet truffle fries! 🌯`
-      } else if (allowance >= 100) {
-        nextMood = 'stressed'
-        botReply = `Cutting it super close! ₹${allowance}/day means you can grab a quick roll, but zero dessert. Don't blow tomorrow's allowance! ⚠️`
-      } else {
-        nextMood = 'angry'
-        botReply = `BFFR (Be for real)! Your cap is literally ₹${allowance}/day. You are having tap water and pantry biscuits tonight, no cap! 🚫`
-      }
-    } else if (type === 'cooked') {
-      userText = 'How cooked am I? 💀'
-      if (risk === 'Safe') {
-        nextMood = 'excited'
-        botReply = `Zero percent cooked! Chef level financial rizz. ₹${balance.toLocaleString('en-IN')} in the bag and runway is pristine, no cap! 🌟`
-      } else if (risk === 'Moderate') {
-        nextMood = 'grateful'
-        botReply = `Medium rare. You're surviving the month, but don't go flexing on Instagram. Respect the hustle! 🍳`
-      } else {
-        nextMood = 'hurt'
-        botReply = `Charcoal burnt! You are in the deficit trenches. Survival odds at ${effectiveMetrics.survivalProbability}%. Emergency spending freeze immediately! 🆘`
-      }
-    } else if (type === 'joke') {
-      userText = 'Tell me a money joke 🤡'
-      nextMood = 'excited'
-      const randomJoke = MONEY_JOKES[Math.floor(Math.random() * MONEY_JOKES.length)]
-      botReply = `${randomJoke}`
-    } else {
-      userText = 'Hypeman mode! ✨'
-      nextMood = 'excited'
-      botReply = `You're doing amazing sweetie! Surviving on a ₹10k budget is peak character development. Day 30 survival is guaranteed if we stay locked in! 🚀`
     }
+    prevTxCount.current = transactions.length
+  }, [transactions])
 
-    setBotMood(nextMood)
-    setConversation((prev) => [
-      ...prev,
-      { sender: 'user', text: userText },
-      { sender: 'bot', text: botReply, mood: nextMood },
-    ])
+  // Auto react when Day advances
+  useEffect(() => {
+    if (currentDay > prevDay.current) {
+      const dayReactions: SpeechItem[] = [
+        {
+          text: `Day ${currentDay} chalu! Naya din, nayi kangaali! Aaj ka daily limit dekh ke hi haath kholna boss! ☀️`,
+          mood: 'grateful',
+          tag: '📅 Naya Din',
+        },
+        {
+          text: `Day ${currentDay} survived! Ek aur din bach gaye bina loan liye, no cap bhai! 🥳`,
+          mood: 'excited',
+          tag: '📅 Level Up',
+        },
+      ]
+      const pick = dayReactions[Math.floor(Math.random() * dayReactions.length)]
+      const timer = setTimeout(() => {
+        setCurrentSpeech(pick)
+        setIsOpen(true)
+      }, 10)
+      return () => clearTimeout(timer)
+    }
+    prevDay.current = currentDay
+  }, [currentDay])
+
+  // Auto react when What-If simulation turns on
+  useEffect(() => {
+    if (simulation.isActive && !prevSimActive.current) {
+      const timer = setTimeout(() => {
+        setCurrentSpeech({
+          text: `Oho! What-If simulation test kar rahe ho? Dekh lo ₹${simulation.proposedAmount} kharch karne se kitna dard hoga! 🧐`,
+          mood: 'stressed',
+          tag: '🧪 What-If Vibe',
+        })
+        setIsOpen(true)
+      }, 10)
+      return () => clearTimeout(timer)
+    }
+    prevSimActive.current = simulation.isActive
+  }, [simulation.isActive, simulation.proposedAmount])
+
+  // Handle manual interaction buttons
+  const triggerJoke = () => {
+    const joke = HINGLISH_JOKES[Math.floor(Math.random() * HINGLISH_JOKES.length)]
+    setCurrentSpeech(joke)
+    setIsOpen(true)
   }
 
-  const handleCustomSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!customInput.trim()) return
+  const triggerRoast = () => {
+    const roast = HINGLISH_ROASTS[Math.floor(Math.random() * HINGLISH_ROASTS.length)]
+    setCurrentSpeech(roast)
+    setIsOpen(true)
+  }
 
-    const q = customInput.toLowerCase()
-    let reply = ''
-    let nextMood: MascotMood = 'joyful'
+  const triggerGyan = () => {
+    const gyan = HINGLISH_GYAN[Math.floor(Math.random() * HINGLISH_GYAN.length)]
+    setCurrentSpeech(gyan)
+    setIsOpen(true)
+  }
 
-    if (q.includes('coffee') || q.includes('starbucks')) {
-      nextMood = 'angry'
-      reply = `A ₹350 iced macchiato when your daily cap is ₹${allowance}/day?! That is pure financial delinquency! Make instant coffee at home! ☕`
-    } else if (q.includes('save') || q.includes('invest') || q.includes('cushion')) {
-      nextMood = 'excited'
-      reply = `Now that's a high-IQ move! Stashing cash in the emergency cushion earns big health score points. Mindful era activated! 🛡️`
-    } else if (q.includes('party') || q.includes('club') || q.includes('weekend')) {
-      nextMood = allowance > 250 ? 'joyful' : 'stressed'
-      reply = allowance > 250
-        ? `You've got some breathing room (₹${allowance}/d), but don't buy the whole squad drinks unless you want to enter your broke era!`
-        : `Stay home and watch reels! Your cap is ₹${allowance}/day. A club outing will send you straight to Critical Doom! 🚨`
-    } else if (q.includes('salary') || q.includes('income') || q.includes('gig')) {
-      nextMood = 'excited'
-      reply = `Inflows are bussin! Log any freelance bag in the Daily Spends section to immediately expand your daily runway! 💻`
+  const triggerSwiggyCheck = () => {
+    const allowance = effectiveMetrics.dynamicDailyAllowance
+    if (allowance >= 200) {
+      setCurrentSpeech({
+        text: `Bhai green signal hai! Aaj ₹${allowance}/day ka limit hai. Ek shawarma ya roll kha sakte ho, par gourmet truffle mat order karna! 🌯`,
+        mood: 'joyful',
+        tag: '🍕 Swiggy Permitted',
+      })
+    } else if (allowance >= 90) {
+      setCurrentSpeech({
+        text: `Bhai borderline scene hai! ₹${allowance}/day bacha hai. Zomato cart band kar aur ghar ka toast khao chup-chaap! ⚠️`,
+        mood: 'stressed',
+        tag: '⚠️ Swiggy Danger',
+      })
     } else {
-      nextMood = 'grateful'
-      reply = `No cap, balance is ₹${balance.toLocaleString('en-IN')} with ₹${allowance}/day safe cap. Stick to the daily allowance and we survive all 30 days! ✨`
+      setCurrentSpeech({
+        text: `BFFR (Be for real)! Allowance ₹${allowance}/day hai aur Zomato khol rahe ho? Total kangaali vibes! Paani pi ke so jao! 🚫`,
+        mood: 'angry',
+        tag: '🛑 Swiggy Denied',
+      })
     }
+    setIsOpen(true)
+  }
 
-    setBotMood(nextMood)
-    setConversation((prev) => [
-      ...prev,
-      { sender: 'user', text: customInput },
-      { sender: 'bot', text: reply, mood: nextMood },
-    ])
-    setCustomInput('')
+  const triggerVibeCheck = () => {
+    const balance = effectiveMetrics.currentBalance
+    if (balance > 6000) {
+      setCurrentSpeech({
+        text: `Full ameer vibes boss! ₹${balance.toLocaleString('en-IN')} bache hain, wallet ekdum solid hai no cap! 💎`,
+        mood: 'excited',
+        tag: '✨ Vibe Check',
+      })
+    } else if (balance > 2500) {
+      setCurrentSpeech({
+        text: `Safe chal rahe ho. ₹${balance.toLocaleString('en-IN')} balance hai. Zyada hawa me mat udna, month-end aane wala hai! 🛡️`,
+        mood: 'grateful',
+        tag: '✨ Vibe Check',
+      })
+    } else if (balance > 500) {
+      setCurrentSpeech({
+        text: `Tight scene hai bhai! Sirf ₹${balance.toLocaleString('en-IN')} bacha hai. Pocket bol rahi hai 'Reham kar de!' 🚨`,
+        mood: 'stressed',
+        tag: '✨ Vibe Check',
+      })
+    } else {
+      setCurrentSpeech({
+        text: `Total kangaali alert! Balance ₹${balance.toLocaleString('en-IN')}. Down catastrophic! Emergency saving mode mandatory! 😭`,
+        mood: 'hurt',
+        tag: '💀 Vibe Check',
+      })
+    }
+    setIsOpen(true)
+  }
+
+  // Clicking the floating mascot directly cycles a fresh funny quip
+  const handleMascotClick = () => {
+    const pool = [...HINGLISH_JOKES, ...HINGLISH_ROASTS, ...HINGLISH_GYAN]
+    const randomPick = pool[Math.floor(Math.random() * pool.length)]
+    setCurrentSpeech(randomPick)
+    setIsOpen(true)
   }
 
   return (
-    <div className="fixed bottom-20 right-3.5 sm:bottom-6 sm:right-6 z-40 select-none">
-      {/* Floating Trigger Pill when closed */}
-      {!isOpen && (
-        <motion.button
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          whileHover={{ scale: 1.06 }}
-          whileTap={{ scale: 0.94 }}
-          onClick={() => setIsOpen(true)}
-          className="flex items-center gap-2.5 p-2 pr-4 rounded-full bg-white border-2 border-zinc-900 shadow-xl cursor-pointer group"
-          style={{ background: 'var(--canvas-card)' }}
-          aria-label="Open BrokeBot Gen Z Companion"
-        >
-          <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0">
-            <Mascot mood={botMood} size={38} />
-          </div>
-          <div className="text-left">
-            <span className="text-[11px] font-extrabold text-zinc-900 block leading-tight flex items-center gap-1">
-              BrokeBot <Sparkles size={11} className="text-amber-500 animate-spin" />
-            </span>
-            <span className="text-[10px] font-bold text-zinc-500 block leading-none">
-              Vibe check?
-            </span>
-          </div>
-        </motion.button>
-      )}
-
-      {/* Expanded Interactive Mascot Chat Window */}
+    <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end pointer-events-auto select-none">
+      {/* Speech Bubble / Callout Popup */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 18, scale: 0.92 }}
+            initial={{ opacity: 0, y: 20, scale: 0.92 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 18, scale: 0.92 }}
-            transition={{ type: 'spring', stiffness: 380, damping: 28 }}
-            className="w-[310px] sm:w-[350px] rounded-[28px] bg-white border-2 border-black/10 shadow-2xl flex flex-col overflow-hidden"
-            style={{ background: 'var(--canvas-card)', maxHeight: '520px' }}
+            exit={{ opacity: 0, y: 15, scale: 0.92 }}
+            transition={{ type: 'spring', damping: 22, stiffness: 280 }}
+            className="mb-3 w-[290px] sm:w-[330px] rounded-3xl bg-white/95 backdrop-blur-xl border border-black/10 shadow-[0_16px_40px_-10px_rgba(0,0,0,0.18)] p-4 relative"
           >
-            {/* Header with Live Persistent Morphing Mascot */}
-            <div className="p-3.5 px-4 bg-zinc-900 text-white flex items-center justify-between border-b border-black/10">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="shrink-0">
-                  <Mascot mood={botMood} size={36} />
-                </div>
-                <div className="min-w-0">
-                  <h4 className="text-xs sm:text-sm font-extrabold font-display leading-tight flex items-center gap-1.5 truncate">
-                    BrokeBot Wingman
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-bold capitalize">
-                      {botMood}
-                    </span>
-                  </h4>
-                  <p className="text-[10px] text-zinc-300 font-medium truncate">
-                    Cap: ₹{allowance}/d · ₹{balance} left
-                  </p>
-                </div>
+            {/* Header bar */}
+            <div className="flex items-center justify-between pb-2 border-b border-black/6">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[11px] font-black uppercase tracking-wider text-zinc-700">
+                  {currentSpeech.tag}
+                </span>
               </div>
-
               <button
                 onClick={() => setIsOpen(false)}
-                className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-zinc-300 hover:text-white transition-colors cursor-pointer shrink-0"
-                aria-label="Close BrokeBot"
+                className="w-6 h-6 rounded-full bg-black/5 hover:bg-black/10 flex items-center justify-center text-zinc-500 hover:text-zinc-800 transition-colors cursor-pointer"
+                title="Minimize speech bubble"
+                aria-label="Close speech bubble"
               >
-                <X size={15} />
+                <X size={13} />
               </button>
             </div>
 
-            {/* Conversation Area */}
-            <div className="p-3.5 space-y-2.5 overflow-y-auto no-scrollbar flex-1 max-h-[260px] bg-[#FAF7F2]/60">
-              {conversation.map((msg, idx) => (
-                <div
-                  key={idx}
-                  className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[85%] p-3 rounded-2xl text-xs font-semibold leading-relaxed ${
-                      msg.sender === 'user'
-                        ? 'bg-zinc-900 text-white rounded-br-xs'
-                        : 'bg-white border border-black/8 text-zinc-800 rounded-bl-xs shadow-2xs'
-                    }`}
-                  >
-                    {msg.text}
-                  </div>
-                </div>
-              ))}
+            {/* Speech message body */}
+            <div className="py-2.5">
+              <p className="text-[13px] font-bold text-zinc-900 leading-relaxed">
+                "{currentSpeech.text}"
+              </p>
             </div>
 
-            {/* Quick Interactive Prompt Buttons */}
-            <div className="p-2.5 bg-white border-t border-black/6">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 block mb-1.5 px-1">
-                Quick Prompts:
-              </span>
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
-                <button
-                  onClick={() => handleAskPrompt('roast')}
-                  className="px-2.5 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-900 text-[10.5px] font-extrabold border border-rose-200 shrink-0 cursor-pointer transition-transform hover:scale-105"
-                >
-                  🔥 Roast budget
-                </button>
-                <button
-                  onClick={() => handleAskPrompt('zomato')}
-                  className="px-2.5 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 text-[10.5px] font-extrabold border border-amber-200 shrink-0 cursor-pointer transition-transform hover:scale-105"
-                >
-                  🍕 Order Swiggy?
-                </button>
-                <button
-                  onClick={() => handleAskPrompt('cooked')}
-                  className="px-2.5 py-1 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 text-[10.5px] font-extrabold border border-purple-200 shrink-0 cursor-pointer transition-transform hover:scale-105"
-                >
-                  💀 How cooked?
-                </button>
-                <button
-                  onClick={() => handleAskPrompt('joke')}
-                  className="px-2.5 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 text-[10.5px] font-extrabold border border-emerald-200 shrink-0 cursor-pointer transition-transform hover:scale-105"
-                >
-                  🤡 Money joke
-                </button>
-                <button
-                  onClick={() => handleAskPrompt('hypeman')}
-                  className="px-2.5 py-1 rounded-xl bg-yellow-50 hover:bg-yellow-100 text-yellow-900 text-[10.5px] font-extrabold border border-yellow-200 shrink-0 cursor-pointer transition-transform hover:scale-105"
-                >
-                  ✨ Hypeman
-                </button>
-              </div>
-            </div>
-
-            {/* Custom Question Input */}
-            <form
-              onSubmit={handleCustomSubmit}
-              className="p-2.5 bg-white border-t border-black/8 flex items-center gap-1.5"
-            >
-              <input
-                type="text"
-                placeholder="Ask BrokeBot anything..."
-                value={customInput}
-                onChange={(e) => setCustomInput(e.target.value)}
-                className="flex-1 px-3 py-2 rounded-xl text-xs font-semibold bg-[#FAF7F2] border border-black/10 focus:outline-none focus:ring-1 focus:ring-zinc-900"
-              />
+            {/* Interactive reaction quick-pills */}
+            <div className="pt-2 border-t border-black/6 flex flex-wrap gap-1.5">
               <button
-                type="submit"
-                className="w-8 h-8 rounded-xl bg-zinc-900 text-white flex items-center justify-center cursor-pointer hover:bg-zinc-800 transition-colors shrink-0"
-                aria-label="Send message"
+                onClick={triggerJoke}
+                className="px-2.5 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 text-[10.5px] font-extrabold border border-amber-200/80 cursor-pointer transition-transform hover:scale-105 active:scale-95 flex items-center gap-1"
               >
-                <Send size={13} className="text-amber-400" />
+                <Laugh size={12} /> Joke
               </button>
-            </form>
+              <button
+                onClick={triggerRoast}
+                className="px-2.5 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-900 text-[10.5px] font-extrabold border border-rose-200/80 cursor-pointer transition-transform hover:scale-105 active:scale-95 flex items-center gap-1"
+              >
+                <Flame size={12} /> Roast
+              </button>
+              <button
+                onClick={triggerSwiggyCheck}
+                className="px-2.5 py-1 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-900 text-[10.5px] font-extrabold border border-orange-200/80 cursor-pointer transition-transform hover:scale-105 active:scale-95 flex items-center gap-1"
+              >
+                <Utensils size={12} /> Swiggy?
+              </button>
+              <button
+                onClick={triggerGyan}
+                className="px-2.5 py-1 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 text-[10.5px] font-extrabold border border-emerald-200/80 cursor-pointer transition-transform hover:scale-105 active:scale-95 flex items-center gap-1"
+              >
+                <Sparkles size={12} /> Gyan
+              </button>
+              <button
+                onClick={triggerVibeCheck}
+                className="px-2.5 py-1 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 text-[10.5px] font-extrabold border border-purple-200/80 cursor-pointer transition-transform hover:scale-105 active:scale-95 flex items-center gap-1"
+              >
+                <HelpCircle size={12} /> Vibe
+              </button>
+            </div>
+
+            {/* Speech bubble pointer arrow */}
+            <div className="absolute -bottom-2 right-10 w-4 h-4 bg-white rotate-45 border-r border-b border-black/10" />
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Minimized thought bubble pill when closed */}
+      {!isOpen && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          onClick={() => setIsOpen(true)}
+          className="mb-2.5 px-3 py-1.5 rounded-2xl bg-zinc-900 text-white text-[11px] font-black shadow-lg border border-white/20 flex items-center gap-1.5 cursor-pointer hover:bg-zinc-800 transition-transform hover:scale-105 active:scale-95"
+        >
+          <MessageCircle size={13} className="text-amber-400" />
+          <span>Tap for Gyan & Jokes! 💬</span>
+        </motion.button>
+      )}
+
+      {/* Floating BIGGER Mascot */}
+      <motion.div
+        animate={{ y: [0, -8, 0] }}
+        transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.94 }}
+        onClick={handleMascotClick}
+        className="relative cursor-pointer group"
+        title="Tap BrokeBot for jokes, slangs & roasts!"
+      >
+        {/* Ambient glow shadow */}
+        <div className="absolute inset-0 rounded-[28px] bg-amber-400/25 blur-xl -z-10 group-hover:bg-amber-400/40 transition-all duration-300" />
+
+        {/* Mascot Squircle Container (Enlarged to 98px-104px) */}
+        <div className="w-[96px] h-[96px] sm:w-[104px] sm:h-[104px] rounded-[28px] bg-white/90 backdrop-blur-md border-2 border-black/10 shadow-[0_12px_32px_-6px_rgba(0,0,0,0.18)] flex items-center justify-center p-1.5 transition-shadow group-hover:shadow-[0_16px_36px_-4px_rgba(0,0,0,0.24)]">
+          <Mascot mood={currentSpeech.mood} size={88} />
+        </div>
+
+        {/* Floating status tag */}
+        <div className="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full bg-zinc-900 text-amber-400 text-[9px] font-black uppercase tracking-wider border border-white/30 shadow-xs flex items-center gap-1">
+          <span>Tap me 👆</span>
+        </div>
+      </motion.div>
     </div>
   )
 }

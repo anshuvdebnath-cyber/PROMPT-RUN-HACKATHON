@@ -9,15 +9,9 @@ describe('Mascot Component Suite', () => {
     'excited',
     'joyful',
     'grateful',
-    'energized',
-    'sensitive',
-    'confused',
-    'bored',
     'stressed',
     'angry',
-    'insecure',
     'hurt',
-    'guilty',
   ]
 
   it.each(allMoods)('renders mascot correctly for mood: %s', (mood) => {

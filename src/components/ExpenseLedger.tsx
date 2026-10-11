@@ -45,20 +45,20 @@ export const ExpenseLedger: React.FC = () => {
   })
 
   return (
-    <div className="card p-6 sm:p-8" style={{ background: 'var(--canvas-card)' }}>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b" style={{ borderColor: 'var(--border)' }}>
-        <div>
-          <h3 className="text-xl sm:text-2xl font-extrabold font-display text-zinc-900">
-            Transaction Ledger & History
+    <div className="card p-4 sm:p-6 min-w-0" style={{ background: 'var(--canvas-card)' }}>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-4 border-b" style={{ borderColor: 'var(--border)' }}>
+        <div className="min-w-0">
+          <h3 className="text-lg sm:text-xl font-extrabold font-display text-zinc-900 leading-tight">
+            Transaction Ledger
           </h3>
-          <p className="text-xs sm:text-sm text-zinc-500 font-medium">
-            Real expenditures recorded throughout your 30-day survival journey.
+          <p className="text-xs sm:text-[13px] text-zinc-500 font-medium">
+            Real spend across your 30-day journey.
           </p>
         </div>
 
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="px-4 py-2.5 rounded-xl bg-zinc-900 text-white font-extrabold text-xs hover:bg-zinc-800 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
+          className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-zinc-900 text-white font-extrabold text-xs hover:bg-zinc-800 transition-all flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
         >
           <Plus size={14} className="text-amber-400" />
           <span>{isAdding ? 'Close Form' : 'Log Expense / Inflow'}</span>
@@ -158,8 +158,8 @@ export const ExpenseLedger: React.FC = () => {
       </AnimatePresence>
 
       {/* Category Filter Pills */}
-      <div className="mt-5 flex items-center gap-1.5 overflow-x-auto pb-2">
-        <span className="text-[11px] font-extrabold text-zinc-400 uppercase tracking-wider mr-1 flex items-center gap-1">
+      <div className="no-scrollbar mt-4 flex items-center gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
+        <span className="text-[11px] font-extrabold text-zinc-400 uppercase tracking-wider mr-1 flex items-center gap-1 shrink-0">
           <Filter size={11} /> Filter:
         </span>
         {['All', 'Expenses', 'Inflows', 'Food & Dining', 'Bills & Utilities'].map((cat) => (
@@ -215,9 +215,9 @@ export const ExpenseLedger: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                 <span
-                  className={`text-sm font-extrabold font-display ${
+                  className={`text-[13px] sm:text-sm font-extrabold font-display whitespace-nowrap ${
                     tx.type === 'expense' ? 'text-zinc-900' : 'text-emerald-700'
                   }`}
                 >
@@ -225,10 +225,11 @@ export const ExpenseLedger: React.FC = () => {
                 </span>
                 <button
                   onClick={() => deleteTransaction(tx.id)}
-                  className="opacity-0 group-hover:opacity-100 p-1 text-zinc-400 hover:text-rose-600 transition-opacity cursor-pointer"
+                  className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer opacity-100 md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100"
                   title="Delete transaction"
+                  aria-label={`Delete ${tx.title}`}
                 >
-                  <Trash2 size={13} />
+                  <Trash2 size={14} />
                 </button>
               </div>
             </div>

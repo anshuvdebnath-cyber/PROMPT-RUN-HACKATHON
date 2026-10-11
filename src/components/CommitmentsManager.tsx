@@ -14,18 +14,18 @@ export const CommitmentsManager: React.FC = () => {
   } = useFinance()
 
   return (
-    <div className="card p-6 sm:p-8" style={{ background: 'var(--canvas-card)' }}>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-5 border-b" style={{ borderColor: 'var(--border)' }}>
-        <div>
-          <h3 className="text-xl sm:text-2xl font-extrabold font-display text-zinc-900">
+    <div className="card p-4 sm:p-6 min-w-0" style={{ background: 'var(--canvas-card)' }}>
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between pb-4 border-b" style={{ borderColor: 'var(--border)' }}>
+        <div className="min-w-0">
+          <h3 className="text-lg sm:text-xl font-extrabold font-display text-zinc-900 leading-tight">
             Commitments & Subscriptions
           </h3>
-          <p className="text-xs sm:text-sm text-zinc-500 font-medium">
-            Fixed non-negotiables & recurring bills. Pause or pay them to see live impact.
+          <p className="text-xs sm:text-[13px] text-zinc-500 font-medium">
+            Fixed bills. Pause or pay to see live impact.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-purple-100 text-purple-900 border border-purple-200 flex items-center gap-1.5 shadow-2xs">
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-extrabold bg-purple-100 text-purple-900 border border-purple-200 flex items-center gap-1.5 whitespace-nowrap">
             <Lock size={12} />
             <span>₹{effectiveMetrics.unpaidCommitmentsTotal.toLocaleString('en-IN')} Reserved</span>
           </span>
@@ -33,11 +33,11 @@ export const CommitmentsManager: React.FC = () => {
       </div>
 
       {/* Fixed Commitments List */}
-      <div className="mt-6">
-        <span className="text-[11px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-3">
-          Fixed Obligations (Non-negotiables):
+      <div className="mt-4">
+        <span className="text-[11px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-2.5">
+          Fixed Obligations
         </span>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
           {commitments.map((c) => (
             <div
               key={c.id}
@@ -105,11 +105,11 @@ export const CommitmentsManager: React.FC = () => {
       </div>
 
       {/* Subscriptions Section */}
-      <div className="mt-7 pt-6 border-t border-black/8">
-        <span className="text-[11px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-3">
-          Monthly Subscriptions:
+      <div className="mt-5 pt-5 border-t border-black/10">
+        <span className="text-[11px] font-extrabold text-zinc-400 uppercase tracking-wider block mb-2.5">
+          Subscriptions
         </span>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 min-[480px]:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
           {subscriptions.map((s) => (
             <div
               key={s.id}

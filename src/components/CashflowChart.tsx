@@ -60,30 +60,30 @@ export const CashflowChart: React.FC = () => {
   const currentPoint = points[currentDay - 1] || points[0]
 
   return (
-    <div className="card p-6 sm:p-8" style={{ background: 'var(--canvas-card)' }}>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 border-b" style={{ borderColor: 'var(--border)' }}>
-        <div>
-          <h3 className="text-xl sm:text-2xl font-extrabold font-display text-zinc-900">
+    <div className="card p-4 sm:p-6 min-w-0" style={{ background: 'var(--canvas-card)' }}>
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between pb-4 border-b" style={{ borderColor: 'var(--border)' }}>
+        <div className="min-w-0">
+          <h3 className="text-lg sm:text-xl font-extrabold font-display text-zinc-900 leading-tight">
             30-Day Runway Forecast
           </h3>
-          <p className="text-xs sm:text-sm text-zinc-500 font-medium">
-            Past burn trajectory vs. projected end-of-month cash runway.
+          <p className="text-xs sm:text-[13px] text-zinc-500 font-medium">
+            Past burn vs. projected end-of-month runway.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 text-xs font-bold text-zinc-600">
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-zinc-600 whitespace-nowrap">
             <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
             Wallet Runway
           </span>
-          <span className="flex items-center gap-1.5 text-xs font-bold text-zinc-600">
+          <span className="flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-zinc-600 whitespace-nowrap">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block" />
-            Day {currentDay} Position
+            Day {currentDay}
           </span>
         </div>
       </div>
 
       {/* SVG Wavy Chart with Soft Gradient */}
-      <div className="relative mt-5 w-full overflow-hidden rounded-[24px] p-4 border" style={{ background: 'var(--canvas-inset)', borderColor: 'var(--border)' }}>
+      <div className="relative mt-4 w-full overflow-hidden rounded-3xl p-2 sm:p-4 border min-w-0" style={{ background: 'var(--canvas-inset)', borderColor: 'var(--border)' }}>
         <svg
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
           className="w-full h-48 sm:h-56 overflow-visible"
@@ -173,28 +173,28 @@ export const CashflowChart: React.FC = () => {
       </div>
 
       {/* Summary Footer */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mt-5">
-        <div className="p-4 rounded-2xl border" style={{ background: 'var(--canvas-inset)', borderColor: 'var(--border)' }}>
+      <div className="grid grid-cols-1 min-[480px]:grid-cols-3 gap-2.5 mt-4">
+        <div className="p-3.5 rounded-2xl border min-w-0" style={{ background: 'var(--canvas-inset)', borderColor: 'var(--border)' }}>
           <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 block">
-            Current Day Burn
+            Daily Burn
           </span>
-          <span className="text-lg font-extrabold text-zinc-900 font-display block mt-0.5">
+          <span className="text-base sm:text-lg font-extrabold text-zinc-900 font-display block mt-0.5 truncate">
             ₹{effectiveMetrics.burnRateDaily}/day
           </span>
         </div>
-        <div className="p-4 rounded-2xl border" style={{ background: 'var(--canvas-inset)', borderColor: 'var(--border)' }}>
+        <div className="p-3.5 rounded-2xl border min-w-0" style={{ background: 'var(--canvas-inset)', borderColor: 'var(--border)' }}>
           <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 block">
-            Projected End Balance
+            Projected End
           </span>
-          <span className={`text-lg font-extrabold font-display block mt-0.5 ${effectiveMetrics.projectedEndBalance >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
+          <span className={`text-base sm:text-lg font-extrabold font-display block mt-0.5 truncate ${effectiveMetrics.projectedEndBalance >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
             ₹{effectiveMetrics.projectedEndBalance.toLocaleString('en-IN')}
           </span>
         </div>
-        <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-black/5">
+        <div className="p-3.5 rounded-2xl bg-[#FAF7F2] border border-black/5 min-w-0">
           <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 block">
             Survival Odds
           </span>
-          <span className="text-lg font-extrabold text-zinc-900 font-display block mt-0.5">
+          <span className="text-base sm:text-lg font-extrabold text-zinc-900 font-display block mt-0.5 truncate">
             {effectiveMetrics.survivalProbability}% ({effectiveMetrics.riskLevel})
           </span>
         </div>

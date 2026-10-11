@@ -96,7 +96,7 @@ export function runWhatIfSimulation(req: SimulationRequest): SimulationResult {
 
   if (req.proposedType === 'income') {
     verdict = `🎉 Nice! This gives you an extra +₹${req.proposedAmount}. Your daily spending room goes up by +₹${dailyAllowanceDelta}/day!`
-    suggestedMascotMood = 'energized'
+    suggestedMascotMood = 'excited'
   } else {
     // Expense
     const daysLeft = Math.max(1, 30 - req.currentDay + 1)
@@ -108,10 +108,10 @@ export function runWhatIfSimulation(req: SimulationRequest): SimulationResult {
       suggestedMascotMood = 'stressed'
     } else if (Math.abs(dailyAllowanceDelta) >= 80) {
       verdict = `⚠️ Heavy toll: Daily cap drops from ₹${currentMetrics.dynamicDailyAllowance} to ₹${simulatedMetrics.dynamicDailyAllowance}/day for ${daysLeft} days. Are you sure?`
-      suggestedMascotMood = 'guilty'
+      suggestedMascotMood = 'angry'
     } else if (Math.abs(dailyAllowanceDelta) >= 30) {
       verdict = `🧐 Mild dent: You lose ~₹${Math.abs(dailyAllowanceDelta)}/day from your guilt-free spending, but commitments remain covered.`
-      suggestedMascotMood = 'confused'
+      suggestedMascotMood = 'stressed'
     } else {
       verdict = `✅ Completely safe: ₹${req.proposedAmount} barely moves the needle. Your daily cap only shifts by -₹${Math.abs(dailyAllowanceDelta)}.`
       suggestedMascotMood = 'joyful'

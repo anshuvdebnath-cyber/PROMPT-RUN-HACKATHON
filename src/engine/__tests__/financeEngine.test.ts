@@ -157,7 +157,7 @@ describe('Finance Engine Calculations', () => {
     expect(severeResult.balanceDelta).toBe(-2500)
     expect(severeResult.dailyAllowanceDelta).toBeLessThan(0)
     expect(severeResult.verdict).toContain('Heavy toll')
-    expect(severeResult.suggestedMascotMood).toBe('guilty')
+    expect(severeResult.suggestedMascotMood).toBe('angry')
 
     // 2. Moderate impulse test (₹1,200 concert ticket)
     const moderateResult = runWhatIfSimulation({
@@ -176,5 +176,56 @@ describe('Finance Engine Calculations', () => {
     expect(moderateResult.balanceDelta).toBe(-1200)
     expect(moderateResult.dailyAllowanceDelta).toBeLessThan(0)
     expect(moderateResult.verdict).toContain('Mild dent')
+  })
+
+  it('moves the mascot mood as expenditures grow (regression: mood must track spend)', () => {
+    const tx = (id: string, amount: number): Transaction => ({
+      id,
+      day: 2,
+      title: 'Test spend',
+      amount,
+      category: 'Shopping & Essentials',
+      type: 'expense',
+      timestamp: '2026-10-02',
+    })
+
+    const moodFor = (extra: Transaction[]) => {
+      const balance = calculateBalance(INITIAL_MONTHLY_BUDGET, extra)
+      const spent = calculateTotalSpent(extra)
+      return evaluateFinancialHealth(
+        5, balance, spent, dummyCommitments, dummySubscriptions, 500, 1500
+      )
+    }
+
+    // Fresh Day-1 with only the default canteen + metro spend → must open calm,
+    // never stressed/angry (regression: fresh load used to render "stressed")
+    const freshTxs: Transaction[] = [
+      { id: 'd1', day: 1, title: 'Campus Canteen Lunch & Chai', amount: 140, category: 'Food & Dining', type: 'expense', timestamp: '2026-10-01' },
+      { id: 'd2', day: 1, title: 'Metro Smart Card Auto-Topup', amount: 200, category: 'Transport & Commute', type: 'expense', timestamp: '2026-10-01' },
+    ]
+    const fresh = evaluateFinancialHealth(
+      1,
+      calculateBalance(INITIAL_MONTHLY_BUDGET, freshTxs),
+      calculateTotalSpent(freshTxs),
+      dummyCommitments,
+      dummySubscriptions,
+      500,
+      1500
+    )
+    expect(['grateful', 'joyful', 'excited']).toContain(fresh.mascotMood)
+
+    // Fresh-ish ledger: small canteen spend only → calm mood
+    const calm = moodFor([tx('a', 200)])
+    expect(['grateful', 'joyful', 'excited']).toContain(calm.mascotMood)
+
+    // Mid-size splurge → mood visibly degrades and allowance shrinks
+    const splurge = moodFor([tx('a', 200), tx('b', 1800)])
+    expect(splurge.dynamicDailyAllowance).toBeLessThan(calm.dynamicDailyAllowance)
+    expect(splurge.mascotMood).not.toBe(calm.mascotMood)
+
+    // Near-drain → distress mood with critical risk
+    const drained = moodFor([tx('a', 200), tx('b', 9200)])
+    expect(['hurt', 'angry', 'stressed']).toContain(drained.mascotMood)
+    expect(['Critical Doom', 'High Alert']).toContain(drained.riskLevel)
   })
 })

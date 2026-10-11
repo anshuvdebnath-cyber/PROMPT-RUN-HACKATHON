@@ -78,28 +78,28 @@ export const WhatIfSimulator: React.FC = () => {
 
   return (
     <div
-      className="card p-6 sm:p-8 relative overflow-hidden"
+      className="card p-4 sm:p-6 lg:p-7 relative overflow-hidden min-w-0"
       id="what-if-simulator"
       style={{ background: 'var(--canvas-card)' }}
     >
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-5 border-b border-black/8">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-amber-100 text-amber-900 flex items-center justify-center font-bold shadow-2xs">
-            <Sparkles size={22} />
+      <div className="section-head flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-black/10">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-900 flex items-center justify-center shrink-0">
+            <Sparkles size={20} />
           </div>
-          <div>
-            <h3 className="text-xl sm:text-2xl font-extrabold font-display text-zinc-900">
+          <div className="min-w-0">
+            <h3 className="text-lg sm:text-xl font-extrabold font-display text-zinc-900 leading-tight">
               What-If Decision Simulator
             </h3>
-            <p className="text-xs sm:text-sm text-zinc-500 font-medium">
+            <p className="section-sub text-xs sm:text-[13px] text-zinc-500 font-medium">
               Simulate spending or income trade-offs before pulling the trigger.
             </p>
           </div>
         </div>
 
         {simulation.isActive && (
-          <span className="px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-amber-300 text-amber-950 flex items-center gap-1.5 border border-amber-400 shadow-2xs animate-pulse">
+          <span className="self-start sm:self-auto px-3 py-1.5 rounded-full text-[11px] font-extrabold bg-amber-300 text-amber-950 flex items-center gap-1.5 border border-amber-400 animate-pulse whitespace-nowrap">
             <Sliders size={13} />
             Live Sandbox Active
           </span>
@@ -107,28 +107,28 @@ export const WhatIfSimulator: React.FC = () => {
       </div>
 
       {/* Quick Gen Z Preset Cards */}
-      <div className="mt-6">
-        <span className="text-[11px] font-extrabold uppercase tracking-wider block mb-3" style={{ color: 'var(--text-3)' }}>
-          Quick Preset Scenarios:
+      <div className="mt-4 sm:mt-5">
+        <span className="text-[11px] font-extrabold uppercase tracking-wider block mb-2.5" style={{ color: 'var(--text-3)' }}>
+          Quick Presets
         </span>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
           {quickPresets.map((p, idx) => (
             <motion.button
               key={idx}
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleSelectPreset(p)}
-              className="p-3.5 rounded-2xl text-left border transition-all flex flex-col justify-between cursor-pointer group"
+              className="p-3 rounded-2xl text-left border transition-all flex flex-col justify-between cursor-pointer group min-w-0"
               style={{ background: 'var(--canvas-inset)', borderColor: 'var(--border)' }}
             >
-              <div className="flex items-center justify-between w-full">
-                <span className="text-xl">{p.icon}</span>
-                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-white text-zinc-600 border border-black/5">
+              <div className="flex items-center justify-between w-full gap-2">
+                <span className="text-lg sm:text-xl shrink-0">{p.icon}</span>
+                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-white text-zinc-600 border border-black/5 truncate">
                   {p.tag}
                 </span>
               </div>
-              <div className="mt-2.5">
-                <span className="text-xs font-bold text-zinc-900 block group-hover:text-amber-800 transition-colors">
+              <div className="mt-2 min-w-0">
+                <span className="text-xs font-bold text-zinc-900 block truncate group-hover:text-amber-800 transition-colors">
                   {p.title}
                 </span>
                 <span className={`text-xs font-extrabold mt-0.5 block ${p.type === 'income' ? 'text-emerald-700' : 'text-rose-700'}`}>
@@ -141,9 +141,9 @@ export const WhatIfSimulator: React.FC = () => {
       </div>
 
       {/* Custom Simulation Controls */}
-      <div className="mt-6 p-5 sm:p-6 rounded-[24px] border" style={{ background: 'var(--canvas-inset)', borderColor: 'var(--border)' }}>
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-          <div className="md:col-span-5">
+      <div className="mt-4 p-4 sm:p-5 rounded-3xl border" style={{ background: 'var(--canvas-inset)', borderColor: 'var(--border)' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-end">
+          <div className="sm:col-span-2 lg:col-span-5 min-w-0">
             <label className="text-xs font-extrabold block mb-1.5" style={{ color: 'var(--text-1)' }}>
               Decision Description
             </label>
@@ -151,13 +151,13 @@ export const WhatIfSimulator: React.FC = () => {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Weekend Cafe Outing, New Jacket"
-              className="w-full px-4 py-2.5 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2"
+              placeholder="e.g. Weekend Cafe Outing"
+              className="w-full px-3.5 py-2.5 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 min-w-0"
               style={{ background: 'var(--canvas-card)', border: '1px solid var(--border)', color: 'var(--text-1)' }}
             />
           </div>
 
-          <div className="md:col-span-3">
+          <div className="lg:col-span-3 min-w-0">
             <label className="text-xs font-extrabold text-zinc-700 block mb-1.5">
               Amount (₹)
             </label>
@@ -168,12 +168,12 @@ export const WhatIfSimulator: React.FC = () => {
               step={50}
               value={amount}
               onChange={(e) => setAmount(Number(e.target.value))}
-              className="w-full px-4 py-2.5 rounded-xl text-sm font-extrabold focus:outline-none focus:ring-2"
+              className="w-full px-3.5 py-2.5 rounded-xl text-sm font-extrabold focus:outline-none focus:ring-2 min-w-0"
               style={{ background: 'var(--canvas-card)', border: '1px solid var(--border)', color: 'var(--text-1)' }}
             />
           </div>
 
-          <div className="md:col-span-2">
+          <div className="lg:col-span-2 min-w-0">
             <label className="text-xs font-extrabold text-zinc-700 block mb-1.5">
               Type
             </label>
@@ -188,7 +188,7 @@ export const WhatIfSimulator: React.FC = () => {
             </select>
           </div>
 
-          <div className="md:col-span-2">
+          <div className="sm:col-span-2 lg:col-span-2">
             <button
               onClick={handleApplySimulation}
               className="w-full py-2.5 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
@@ -200,31 +200,31 @@ export const WhatIfSimulator: React.FC = () => {
         </div>
 
         {/* Quick Amount Step Pills & Range Slider */}
-        <div className="mt-4 pt-4 border-t flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3" style={{ borderColor: 'var(--border)' }}>
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold" style={{ color: 'var(--text-3)' }}>Quick Adjust:</span>
+        <div className="mt-3.5 pt-3.5 border-t flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between" style={{ borderColor: 'var(--border)' }}>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-[11px] font-bold" style={{ color: 'var(--text-3)' }}>Quick:</span>
             <button
               onClick={() => handleQuickAdd(100)}
-              className="px-2.5 py-1 text-xs font-bold rounded-lg bg-white border border-black/10 hover:bg-zinc-100 text-zinc-800 shadow-2xs cursor-pointer"
+              className="px-2.5 py-1 text-xs font-bold rounded-lg bg-white border border-black/10 hover:bg-zinc-100 text-zinc-800 cursor-pointer"
             >
               +₹100
             </button>
             <button
               onClick={() => handleQuickAdd(250)}
-              className="px-2.5 py-1 text-xs font-bold rounded-lg bg-white border border-black/10 hover:bg-zinc-100 text-zinc-800 shadow-2xs cursor-pointer"
+              className="px-2.5 py-1 text-xs font-bold rounded-lg bg-white border border-black/10 hover:bg-zinc-100 text-zinc-800 cursor-pointer"
             >
               +₹250
             </button>
             <button
               onClick={() => handleQuickAdd(500)}
-              className="px-2.5 py-1 text-xs font-bold rounded-lg bg-white border border-black/10 hover:bg-zinc-100 text-zinc-800 shadow-2xs cursor-pointer"
+              className="px-2.5 py-1 text-xs font-bold rounded-lg bg-white border border-black/10 hover:bg-zinc-100 text-zinc-800 cursor-pointer"
             >
               +₹500
             </button>
           </div>
 
-          <div className="flex items-center gap-3 w-full sm:w-64">
-            <span className="text-[11px] font-extrabold text-zinc-400">₹50</span>
+          <div className="flex items-center gap-2.5 w-full lg:w-64">
+            <span className="text-[11px] font-extrabold text-zinc-400 shrink-0">₹50</span>
             <input
               type="range"
               min={50}
@@ -238,9 +238,9 @@ export const WhatIfSimulator: React.FC = () => {
                   startSimulation(val, title, category, type)
                 }
               }}
-              className="w-full accent-zinc-900 cursor-pointer h-2 bg-zinc-200 rounded-lg appearance-none"
+              className="w-full cursor-pointer min-w-0"
             />
-            <span className="text-[11px] font-extrabold text-zinc-400">₹4k</span>
+            <span className="text-[11px] font-extrabold text-zinc-400 shrink-0">₹4k</span>
           </div>
         </div>
       </div>
@@ -252,31 +252,31 @@ export const WhatIfSimulator: React.FC = () => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            className="mt-6 p-6 rounded-[26px] border-2 border-amber-300 bg-amber-50/80 shadow-md"
+            className="mt-4 p-4 sm:p-5 rounded-3xl border-2 border-amber-300 bg-amber-50/80 shadow-md min-w-0"
           >
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-amber-200">
-              <div className="flex items-center gap-3.5">
-                <Mascot mood={effectiveMetrics.mascotMood} size={55} />
-                <div>
-                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-amber-900">
-                    Simulated Financial Consequence
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-3.5 border-b border-amber-200">
+              <div className="flex items-center gap-3 min-w-0">
+                <Mascot mood={effectiveMetrics.mascotMood} size={48} />
+                <div className="min-w-0">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-900 block">
+                    Simulated Consequence
                   </span>
-                  <h4 className="text-lg font-extrabold text-zinc-900 font-display">
+                  <h4 className="text-base sm:text-lg font-extrabold text-zinc-900 font-display leading-tight">
                     {simulation.impactSummary.verdict}
                   </h4>
                 </div>
               </div>
 
               {simulation.impactSummary.riskChange !== 'Unchanged' && (
-                <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-rose-200 text-rose-950 border border-rose-300 flex items-center gap-1 shadow-2xs">
+                <span className="self-start sm:self-auto px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-rose-200 text-rose-950 border border-rose-300 flex items-center gap-1 whitespace-nowrap">
                   <AlertTriangle size={13} />
-                  Risk Shift: {simulation.impactSummary.riskChange}
+                  Risk: {simulation.impactSummary.riskChange}
                 </span>
               )}
             </div>
 
             {/* Side-by-Side Before vs After Comparison Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mt-5 text-center">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mt-4 text-center">
               <div className="p-3.5 rounded-2xl bg-white border border-amber-200 shadow-2xs">
                 <span className="text-[10px] font-extrabold text-zinc-400 block uppercase tracking-wider">
                   Liquid Balance
@@ -324,6 +324,27 @@ export const WhatIfSimulator: React.FC = () => {
                   {effectiveMetrics.score}/100
                 </span>
               </div>
+            </div>
+
+            {/* Month-end forecast: the interconnected consequence */}
+            <div className="mt-2.5 p-3.5 rounded-2xl bg-white border border-amber-200 flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <span className="text-[10px] font-extrabold text-zinc-400 block uppercase tracking-wider">
+                  Projected Month-End Forecast
+                </span>
+                <p className="text-xs font-bold text-zinc-600 mt-0.5">
+                  <span className="line-through text-zinc-400">₹{metrics.projectedEndBalance.toLocaleString('en-IN')}</span>
+                  {' → '}
+                  <span className={`font-extrabold ${effectiveMetrics.projectedEndBalance >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
+                    ₹{effectiveMetrics.projectedEndBalance.toLocaleString('en-IN')}
+                  </span>
+                  {' · '}
+                  <span className="font-semibold">{metrics.riskLevel} → {effectiveMetrics.riskLevel}</span>
+                </p>
+              </div>
+              <span className="text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 whitespace-nowrap shrink-0">
+                Day 30 impact
+              </span>
             </div>
 
             {/* Gen Z Advice Callout */}

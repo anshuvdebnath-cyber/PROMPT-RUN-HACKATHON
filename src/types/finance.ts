@@ -13,15 +13,9 @@ export type MascotMood =
   | 'excited'
   | 'joyful'
   | 'grateful'
-  | 'energized'
-  | 'sensitive'
-  | 'confused'
-  | 'bored'
   | 'stressed'
   | 'angry'
-  | 'insecure'
   | 'hurt'
-  | 'guilty'
 
 export interface Transaction {
   id: string

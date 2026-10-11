@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sparkles, LayoutGrid, X } from 'lucide-react'
+import { Sparkles, Images, X, ArrowLeft } from 'lucide-react'
 import { useFinance } from '../context/useFinance'
 import { Mascot } from './Mascot'
 import { MASCOT_METADATA } from '../data/mascotData'
@@ -8,9 +8,8 @@ import { HealthScoreRing } from './HealthScoreRing'
 import { MascotMood } from '../types/finance'
 
 const ALL_MOODS: MascotMood[] = [
-  'excited', 'joyful', 'grateful', 'energized',
-  'sensitive', 'confused', 'bored', 'stressed',
-  'angry', 'insecure', 'hurt', 'guilty',
+  'excited', 'joyful', 'grateful',
+  'stressed', 'angry', 'hurt',
 ]
 
 export const HeroVibeBanner: React.FC = () => {
@@ -19,228 +18,149 @@ export const HeroVibeBanner: React.FC = () => {
   const [previewMood, setPreviewMood] = useState<MascotMood | null>(null)
 
   const activeMood = previewMood ?? effectiveMetrics.mascotMood
-  const meta       = MASCOT_METADATA[activeMood] ?? MASCOT_METADATA.joyful
+  const meta = MASCOT_METADATA[activeMood] ?? MASCOT_METADATA.joyful
+
+  // A gallery preview is a momentary peek — snap back to the live mood as
+  // soon as real spending changes, so the mascot always tracks the ledger.
+  const liveFingerprint = `${effectiveMetrics.currentBalance}:${effectiveMetrics.score}:${effectiveMetrics.riskLevel}`
+  useEffect(() => {
+    setPreviewMood(null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveFingerprint])
+
+  const riskStyle =
+    effectiveMetrics.riskLevel === 'Safe'
+      ? { bg: '#D9F5E5', fg: '#065F46' }
+      : effectiveMetrics.riskLevel === 'Moderate'
+        ? { bg: '#FFF3C4', fg: '#854D0E' }
+        : { bg: '#FFE4E6', fg: '#9F1239' }
 
   return (
     <section aria-label="Financial vibe status">
-      {/* ── Hero card ───────────────────────────────────────────────────── */}
       <motion.div
         layout
-        className="relative overflow-hidden rounded-[var(--r-2xl)] border"
-        style={{
-          background: meta.bg,
-          borderColor: 'var(--border)',
-          boxShadow: 'var(--shadow-md)',
-          minHeight: 220,
-        }}
+        className="relative overflow-hidden border"
+        style={{ background: meta.bg, borderColor: 'var(--border-soft)', borderRadius: 28, boxShadow: 'var(--shadow-card)' }}
         animate={{ backgroundColor: meta.bg }}
-        transition={{ duration: 0.55, ease: 'easeInOut' }}
+        transition={{ duration: 0.5 }}
       >
-        {/* Subtle texture */}
-        <div className="hatched-pattern absolute inset-0 opacity-30 pointer-events-none" />
+        <div className="dot-grid absolute inset-0 opacity-40 pointer-events-none" />
 
-        {/* Content */}
-        <div className="relative z-10 flex flex-col lg:flex-row items-center lg:items-stretch gap-6 p-7 sm:p-10">
-
-          {/* Left: Mascot */}
-          <div className="flex flex-col items-center gap-3 shrink-0">
-            <div className="relative">
-              {/* Ambient glow ring */}
-              <div
-                className="absolute inset-0 rounded-full scale-110 opacity-30 blur-2xl"
-                style={{ background: meta.color }}
-              />
-              <Mascot
-                mood={activeMood}
-                size={140}
-                className="relative cursor-pointer"
-                onClick={() => setShowGallery(true)}
-              />
+        <div className="relative z-10 p-4 sm:p-6 flex flex-col gap-4 md:flex-row md:items-center">
+          {/* Mascot blob */}
+          <div className="flex md:flex-col items-center gap-3 shrink-0">
+            <div className="relative w-[104px] h-[104px] sm:w-[124px] sm:h-[124px] rounded-[28px] bg-white/90 border border-black/5 flex items-center justify-center overflow-hidden" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <div className="absolute inset-0 dot-grid opacity-60" />
+              <Mascot mood={activeMood} size={92} className="relative cursor-pointer" onClick={() => setShowGallery(true)} />
             </div>
             <button
               onClick={() => setShowGallery(true)}
-              className="pill cursor-pointer hover:scale-105 transition-transform"
-              style={{ background: 'rgba(255,255,255,0.9)', borderColor: 'var(--border)' }}
+              className="pill cursor-pointer hover:scale-105 transition-transform !bg-white/90"
             >
-              <LayoutGrid size={11} />
-              12 Moods
+              <Images size={12} /> 6 moods
             </button>
           </div>
 
-          {/* Center: Vibe info */}
-          <div className="flex-1 flex flex-col justify-center text-center lg:text-left min-w-0">
-            {/* Status pills */}
-            <div className="flex items-center justify-center lg:justify-start gap-2 flex-wrap mb-4">
-              <span
-                className="pill"
-                style={{ background: 'rgba(255,255,255,0.9)', borderColor: 'var(--border)' }}
-              >
-                <span
-                  className="w-2 h-2 rounded-full"
-                  style={{ background: meta.color }}
-                />
+          {/* Copy */}
+          <div className="flex-1 min-w-0 text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start gap-1.5 flex-wrap mb-2.5">
+              <span className="pill !bg-white/90">
+                <span className="w-2 h-2 rounded-full shrink-0" style={{ background: meta.color }} />
                 {meta.label}
               </span>
-
-              <span
-                className={`pill ${
-                  effectiveMetrics.riskLevel === 'Safe'
-                    ? 'bg-emerald-100 border-emerald-300 text-emerald-800'
-                    : effectiveMetrics.riskLevel === 'Moderate'
-                    ? 'bg-amber-100 border-amber-300 text-amber-800'
-                    : 'bg-rose-100 border-rose-300 text-rose-800'
-                }`}
-              >
-                {effectiveMetrics.riskLevel} Risk
+              <span className="pill !border-transparent" style={{ background: riskStyle.bg, color: riskStyle.fg }}>
+                {effectiveMetrics.riskLevel} risk
               </span>
-
               {simulation.isActive && (
-                <span
-                  className="pill animate-pulse"
-                  style={{ background: '#FFF176', borderColor: '#F5C842', color: '#7A5E00' }}
-                >
-                  <Sparkles size={11} />
-                  Simulation Active
+                <span className="pill animate-pulse !border-transparent" style={{ background: '#221C15', color: '#FDE68A' }}>
+                  <Sparkles size={11} /> Sandbox on
                 </span>
               )}
             </div>
 
-            {/* Big vibe headline */}
             <motion.h2
               key={activeMood + 'vibe'}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="font-display font-extrabold tracking-tight leading-tight mb-4"
-              style={{
-                fontSize: 'clamp(1.5rem, 3.5vw, 2.4rem)',
-                color: 'var(--text-1)',
-              }}
+              className="font-display font-bold text-balance leading-[1.08]"
+              style={{ fontSize: 'clamp(1.5rem, 4.5vw, 2.2rem)' }}
             >
               {meta.vibe}
             </motion.h2>
 
-            {/* Quip */}
-            <motion.div
-              key={activeMood + 'quip'}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="inline-flex items-start gap-2 px-5 py-3.5 rounded-2xl text-sm font-medium leading-snug"
-              style={{
-                background: 'rgba(255,255,255,0.88)',
-                border: '1px solid var(--border)',
-                color: 'var(--text-1)',
-                maxWidth: 520,
-                backdropFilter: 'blur(8px)',
-              }}
-            >
-              <span className="shrink-0">💡</span>
-              <span>
-                <strong>Fin-Vibe Check:</strong> {effectiveMetrics.quip}
-              </span>
-            </motion.div>
+            <div className="mt-2.5 inline-flex items-start gap-2 px-4 py-3 rounded-2xl bg-white/90 border border-black/5 text-left w-full md:max-w-[560px]" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <span className="shrink-0 text-base">💡</span>
+              <p className="text-[13px] leading-relaxed min-w-0" style={{ color: 'var(--text-2)' }}>
+                <strong style={{ color: 'var(--text-1)' }}>Vibe check — </strong>{effectiveMetrics.quip}
+              </p>
+            </div>
 
             {previewMood && (
-              <button
-                onClick={() => setPreviewMood(null)}
-                className="mt-3 text-xs font-bold underline cursor-pointer self-center lg:self-start"
-                style={{ color: 'var(--text-2)' }}
-              >
-                ← Back to live mood
+              <button onClick={() => setPreviewMood(null)} className="mt-2 inline-flex items-center gap-1 text-xs font-bold underline cursor-pointer" style={{ color: 'var(--text-2)' }}>
+                <ArrowLeft size={12} /> Back to live mood
               </button>
             )}
           </div>
 
-          {/* Right: Health Ring */}
-          <div className="shrink-0 flex items-center justify-center">
-            <HealthScoreRing metrics={effectiveMetrics} size={160} />
+          {/* Health ring */}
+          <div className="shrink-0 flex justify-center md:justify-end">
+            <div className="bg-white/90 border border-black/5 rounded-[24px] p-3" style={{ boxShadow: 'var(--shadow-card)' }}>
+              <HealthScoreRing metrics={effectiveMetrics} size={118} />
+            </div>
           </div>
         </div>
       </motion.div>
 
-      {/* ── Mood Gallery Modal ──────────────────────────────────────────── */}
+      {/* Gallery modal */}
       <AnimatePresence>
         {showGallery && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(6px)' }}
+            style={{ background: 'rgba(34,28,21,0.45)', backdropFilter: 'blur(6px)' }}
             onClick={() => setShowGallery(false)}
           >
             <motion.div
-              initial={{ scale: 0.92, opacity: 0, y: 16 }}
-              animate={{ scale: 1,    opacity: 1, y: 0 }}
-              exit={{ scale: 0.92,    opacity: 0, y: 16 }}
-              transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-              className="bg-white rounded-[var(--r-2xl)] w-full max-w-xl border overflow-hidden flex flex-col"
-              style={{
-                borderColor: 'var(--border)',
-                boxShadow: 'var(--shadow-lg)',
-                maxHeight: '88vh',
-              }}
+              initial={{ scale: 0.94, y: 14, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.94, y: 14, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 360, damping: 30 }}
+              className="bg-white rounded-[28px] w-full max-w-xl border overflow-hidden flex flex-col"
+              style={{ borderColor: 'var(--border-soft)', boxShadow: 'var(--shadow-pop)', maxHeight: '86vh' }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header */}
-              <div
-                className="flex items-center justify-between px-7 py-5 border-b"
-                style={{ borderColor: 'var(--border)' }}
-              >
+              <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-black/5">
                 <div>
-                  <h3 className="font-display text-xl font-bold" style={{ color: 'var(--text-1)' }}>
-                    The 12 Mood Mascots
-                  </h3>
-                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
-                    Click any mood to preview the squircle reaction live
-                  </p>
+                  <h3 className="font-display text-lg font-bold">Mood mascots</h3>
+                  <p className="text-xs" style={{ color: 'var(--text-3)' }}>Tap one to preview it live</p>
                 </div>
-                <button
-                  onClick={() => setShowGallery(false)}
-                  className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
-                  style={{ background: 'var(--canvas-inset)', border: '1px solid var(--border)', color: 'var(--text-2)' }}
-                  aria-label="Close gallery"
-                >
+                <button onClick={() => setShowGallery(false)} className="w-9 h-9 rounded-full flex items-center justify-center cursor-pointer hover:bg-black/5 transition-colors bg-black/5" aria-label="Close gallery">
                   <X size={16} />
                 </button>
               </div>
-
-              {/* Grid */}
-              <div className="grid grid-cols-4 gap-3 p-6 overflow-y-auto">
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 p-4 overflow-y-auto">
                 {ALL_MOODS.map((m) => {
                   const mMeta = MASCOT_METADATA[m]
+                  const selected = activeMood === m
                   return (
                     <button
                       key={m}
-                      onClick={() => {
-                        setPreviewMood(m)
-                        setShowGallery(false)
-                      }}
-                      className="flex flex-col items-center gap-2 p-3 rounded-2xl border cursor-pointer transition-all hover:scale-105 group"
+                      onClick={() => { setPreviewMood(m); setShowGallery(false) }}
+                      className="flex flex-col items-center gap-1.5 p-2.5 rounded-2xl border cursor-pointer transition-all hover:scale-[1.04]"
                       style={{
-                        background: activeMood === m ? mMeta?.bg ?? '#f5f5f5' : 'var(--canvas-inset)',
-                        borderColor: activeMood === m ? 'var(--border-strong)' : 'var(--border)',
-                        boxShadow: activeMood === m ? 'var(--shadow-sm)' : 'none',
+                        background: selected ? mMeta?.bg : 'var(--canvas)',
+                        borderColor: selected ? 'var(--ink)' : 'var(--border-soft)',
                       }}
                     >
-                      <Mascot mood={m} size={64} />
-                      <span className="text-[11px] font-bold capitalize" style={{ color: 'var(--text-1)' }}>
-                        {m}
-                      </span>
+                      <Mascot mood={m} size={56} />
+                      <span className="text-[11px] font-bold capitalize">{m}</span>
                     </button>
                   )
                 })}
               </div>
-
-              {/* Footer */}
-              <div className="px-6 py-4 border-t text-center" style={{ borderColor: 'var(--border)' }}>
-                <button
-                  onClick={() => setShowGallery(false)}
-                  className="px-6 py-2.5 rounded-xl font-bold text-sm cursor-pointer hover:opacity-90 transition"
-                  style={{ background: '#1A1A1A', color: '#fff' }}
-                >
-                  Close Gallery
+              <div className="px-4 py-3 border-t border-black/5 text-center">
+                <button onClick={() => setShowGallery(false)} className="px-6 py-2.5 rounded-2xl font-bold text-sm text-white cursor-pointer" style={{ background: 'var(--ink)' }}>
+                  Done
                 </button>
               </div>
             </motion.div>

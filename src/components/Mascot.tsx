@@ -137,90 +137,6 @@ export const Mascot: React.FC<MascotProps> = ({
           </svg>
         )
 
-      case 'energized':
-        // Mint squircle with cheeky wink and smirk
-        return (
-          <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
-            <rect x="5" y="5" width="90" height="90" rx="26" fill="#86EFAC" />
-            {/* Wink left eye */}
-            <path d="M26 46 L40 46" stroke="#18181B" strokeWidth="4.5" strokeLinecap="round" />
-            {/* Open right eye */}
-            <circle cx="66" cy="46" r="6" fill="#18181B" />
-            <circle cx="68" cy="44" r="2" fill="#FFFFFF" />
-            {/* Cheeky Smirk */}
-            <path
-              d="M40 60 Q52 70 65 58"
-              fill="none"
-              stroke="#18181B"
-              strokeWidth="4.5"
-              strokeLinecap="round"
-            />
-          </svg>
-        )
-
-      case 'sensitive':
-        // Soft Mint squircle with worried tilted eyebrows and sad quivering mouth
-        return (
-          <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
-            <rect x="5" y="5" width="90" height="90" rx="26" fill="#A7D7C5" />
-            {/* Worried brows */}
-            <path d="M28 38 L42 33" stroke="#18181B" strokeWidth="4" strokeLinecap="round" />
-            <path d="M72 38 L58 33" stroke="#18181B" strokeWidth="4" strokeLinecap="round" />
-            {/* Eyes */}
-            <circle cx="34" cy="47" r="4.5" fill="#18181B" />
-            <circle cx="66" cy="47" r="4.5" fill="#18181B" />
-            {/* Teardrop */}
-            <path d="M38 54 C36 57 36 60 38 62 C40 64 42 62 41 58 Z" fill="#38BDF8" />
-            {/* Sad quivering mouth */}
-            <path
-              d="M38 67 Q50 60 62 67"
-              fill="none"
-              stroke="#18181B"
-              strokeWidth="4.5"
-              strokeLinecap="round"
-            />
-          </svg>
-        )
-
-      case 'confused':
-        // Yellow squircle with one wide shocked eye, one small eye, and wavy mouth
-        return (
-          <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
-            <rect x="5" y="5" width="90" height="90" rx="26" fill="#FDE047" />
-            {/* Left large wide eye */}
-            <circle cx="34" cy="45" r="9" fill="#FFFFFF" stroke="#18181B" strokeWidth="3" />
-            <circle cx="34" cy="45" r="4.5" fill="#18181B" />
-            {/* Right smaller eye */}
-            <circle cx="66" cy="45" r="5.5" fill="#18181B" />
-            {/* Wavy confused mouth */}
-            <path
-              d="M35 66 Q42 61 50 66 Q58 71 65 66"
-              fill="none"
-              stroke="#18181B"
-              strokeWidth="4.5"
-              strokeLinecap="round"
-            />
-          </svg>
-        )
-
-      case 'bored':
-        // Sage mint squircle with sleepy flat half-closed lids and flat mouth
-        return (
-          <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
-            <rect x="5" y="5" width="90" height="90" rx="26" fill="#A7D7C5" />
-            {/* Flat sleepy eye lids */}
-            <path d="M26 47 L42 47" stroke="#18181B" strokeWidth="4.5" strokeLinecap="round" />
-            <path d="M58 47 L74 47" stroke="#18181B" strokeWidth="4.5" strokeLinecap="round" />
-            {/* Under-eye flat line */}
-            <path d="M29 53 L39 53" stroke="#18181B" strokeWidth="2.5" strokeLinecap="round" />
-            <path d="M61 53 L71 53" stroke="#18181B" strokeWidth="2.5" strokeLinecap="round" />
-            {/* Sweat bead */}
-            <path d="M78 40 C76 43 76 46 78 48 C80 50 82 48 81 44 Z" fill="#0284C7" />
-            {/* Flat straight mouth */}
-            <path d="M38 68 L62 68" stroke="#18181B" strokeWidth="4.5" strokeLinecap="round" />
-          </svg>
-        )
-
       case 'stressed':
         // Blush pink squircle with sweat drops, flushed cheeks, tense wavy mouth
         return (
@@ -247,21 +163,6 @@ export const Mascot: React.FC<MascotProps> = ({
           </svg>
         )
 
-      case 'insecure':
-        // Warm Orange squircle with nervous side-glancing eyes
-        return (
-          <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
-            <rect x="5" y="5" width="90" height="90" rx="26" fill="#FB923C" />
-            {/* White side-glancing eye boxes */}
-            <circle cx="34" cy="48" r="8" fill="#FFFFFF" stroke="#18181B" strokeWidth="3" />
-            <circle cx="30" cy="48" r="4" fill="#18181B" />
-            <circle cx="66" cy="48" r="8" fill="#FFFFFF" stroke="#18181B" strokeWidth="3" />
-            <circle cx="62" cy="48" r="4" fill="#18181B" />
-            {/* Hesitant small flat mouth */}
-            <path d="M40 68 L60 68" stroke="#18181B" strokeWidth="4.5" strokeLinecap="round" />
-          </svg>
-        )
-
       case 'hurt':
         // Sage mint squircle with sad downward brows and streaming blue tears
         return (
@@ -284,23 +185,6 @@ export const Mascot: React.FC<MascotProps> = ({
               strokeWidth="5"
               strokeLinecap="round"
             />
-          </svg>
-        )
-
-      case 'guilty':
-        // Yellow squircle with sheepish downward eyes and nervous teeth
-        return (
-          <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
-            <rect x="5" y="5" width="90" height="90" rx="26" fill="#FDE047" />
-            {/* Eyes looking down sheepishly */}
-            <circle cx="34" cy="46" r="7.5" fill="#FFFFFF" stroke="#18181B" strokeWidth="3" />
-            <circle cx="36" cy="49" r="4" fill="#18181B" />
-            <circle cx="66" cy="46" r="7.5" fill="#FFFFFF" stroke="#18181B" strokeWidth="3" />
-            <circle cx="68" cy="49" r="4" fill="#18181B" />
-            {/* Clenched nervous teeth */}
-            <rect x="34" y="62" width="32" height="13" rx="3.5" fill="#FFFFFF" stroke="#18181B" strokeWidth="3" />
-            <path d="M34 68.5 L66 68.5" stroke="#18181B" strokeWidth="2.5" />
-            <path d="M42 62 L42 75 M50 62 L50 75 M58 62 L58 75" stroke="#18181B" strokeWidth="2.5" />
           </svg>
         )
 

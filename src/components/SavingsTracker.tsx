@@ -7,29 +7,29 @@ export const SavingsTracker: React.FC = () => {
   const { savingsGoals, depositToSavings, effectiveMetrics } = useFinance()
 
   return (
-    <div className="card p-6 sm:p-7 flex flex-col justify-between h-full" style={{ background: 'var(--canvas-card)' }}>
-      <div>
-        <div className="flex items-center justify-between pb-4 border-b" style={{ borderColor: 'var(--border)' }}>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold shadow-2xs">
-              <Shield size={20} />
+    <div className="card p-4 sm:p-5 flex flex-col justify-between h-full min-w-0" style={{ background: 'var(--canvas-card)' }}>
+      <div className="min-w-0">
+        <div className="flex items-start justify-between gap-2 pb-3.5 border-b" style={{ borderColor: 'var(--border)' }}>
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-9 h-9 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+              <Shield size={18} />
             </div>
-            <div>
-              <h3 className="text-xl font-extrabold font-display text-zinc-900">
-                Savings & Emergency Shield
+            <div className="min-w-0">
+              <h3 className="text-base sm:text-lg font-extrabold font-display text-zinc-900 leading-tight">
+                Savings Shield
               </h3>
-              <p className="text-xs text-zinc-500 font-medium">
-                Emergency buffer to absorb curveballs.
+              <p className="text-[11px] sm:text-xs text-zinc-500 font-medium">
+                Emergency buffer for curveballs.
               </p>
             </div>
           </div>
 
-          <span className="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-950 border border-emerald-200">
-            Buffer Stash
+          <span className="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-100 text-emerald-950 border border-emerald-200 whitespace-nowrap shrink-0">
+            Buffer
           </span>
         </div>
 
-        <div className="mt-5 space-y-4">
+        <div className="mt-4 space-y-3">
           {savingsGoals.map((goal) => {
             const progress = Math.min(
               100,

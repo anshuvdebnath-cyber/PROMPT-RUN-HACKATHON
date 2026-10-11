@@ -117,7 +117,10 @@ export function evaluateFinancialHealth(
   )
 
   const daysElapsed = Math.max(1, currentDay)
-  const rawBurnRate = spentSoFar / daysElapsed
+  // Amortize early-month spending over the first week so a single Day-1
+  // lunch isn't mistaken for a daily habit (prevents instant Critical Doom).
+  const burnDenominator = Math.max(7, daysElapsed)
+  const rawBurnRate = spentSoFar / burnDenominator
   // Early in the month (first 7 days), blend actual burn rate with recommended daily allowance pace
   const burnWeight = Math.min(1, daysElapsed / 7)
   const targetPace = dynamicDailyAllowance > 0 ? dynamicDailyAllowance : 120
@@ -207,7 +210,9 @@ export function evaluateFinancialHealth(
     balance,
     dynamicDailyAllowance,
     projectedEndBalance,
-    currentDay
+    currentDay,
+    spentSoFar,
+    dailyBurnRate
   )
 
   return {
@@ -228,7 +233,9 @@ export function evaluateFinancialHealth(
 }
 
 /**
- * Intelligent Gen-Z mood and relatable quip selector
+ * Intelligent Gen-Z mood and relatable quip selector.
+ * Pace-aware: compares actual daily burn against the safe cap so every
+ * meaningful spend visibly moves the mascot, with quips citing real numbers.
  */
 function selectMascotMoodAndQuip(
   score: number,
@@ -236,8 +243,13 @@ function selectMascotMoodAndQuip(
   balance: number,
   allowance: number,
   projectedEnd: number,
-  day: number
+  day: number,
+  spent: number,
+  burnRate: number
 ): { mood: MascotMood; quip: string } {
+  const burnRatio = allowance > 0 ? burnRate / allowance : burnRate > 0 ? 99 : 0
+  const overspending = burnRatio > 1.2
+
   if (balance <= 0) {
     return {
       mood: 'hurt',
@@ -248,7 +260,7 @@ function selectMascotMoodAndQuip(
   if (risk === 'Critical Doom') {
     if (balance < 500) {
       return {
-        mood: 'sensitive',
+        mood: 'hurt',
         quip: `Wallet is literally in tears. Only ₹${balance} left with ${30 - day} days to go!`,
       }
     }
@@ -261,24 +273,37 @@ function selectMascotMoodAndQuip(
   if (risk === 'High Alert') {
     return {
       mood: 'stressed',
-      quip: `Sweating bullets. Daily cap shrunk to ₹${allowance}/day. Instant ramen diet inbound.`,
+      quip: `Sweating bullets. Burned ₹${spent.toLocaleString('en-IN')} so far (₹${burnRate}/day vs a ₹${allowance} cap). Instant ramen diet inbound.`,
     }
   }
 
   if (risk === 'Moderate') {
+    if (overspending) {
+      return {
+        mood: 'stressed',
+        quip: `Pace check: you're torching ₹${burnRate}/day against a ₹${allowance} cap after spending ₹${spent.toLocaleString('en-IN')}. Slow down!`,
+      }
+    }
     if (allowance < 180) {
       return {
-        mood: 'insecure',
+        mood: 'stressed',
         quip: `Tight squeeze. One rogue coffee and the weekly budget folds. Tread lightly!`,
       }
     }
     return {
-      mood: 'bored',
+      mood: 'grateful',
       quip: `Floating along. Not broke, but definitely can't afford main character energy today.`,
     }
   }
 
-  // Safe status
+  // Safe status — still react to pace so big spends visibly dent the vibe
+  if (overspending) {
+    return {
+      mood: 'joyful',
+      quip: `Covered for now, but ₹${burnRate}/day vs a ₹${allowance} cap is spicy. That ₹${spent.toLocaleString('en-IN')} spend left a mark!`,
+    }
+  }
+
   if (score >= 90) {
     return {
       mood: 'excited',

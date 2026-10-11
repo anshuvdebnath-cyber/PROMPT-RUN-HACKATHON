@@ -22,26 +22,26 @@ export const SurpriseEvents: React.FC = () => {
   }
 
   return (
-    <div className="card p-6 sm:p-7 flex flex-col justify-between h-full" style={{ background: 'var(--canvas-card)' }}>
-      <div>
-        <div className="flex items-center justify-between pb-4 border-b" style={{ borderColor: 'var(--border)' }}>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-rose-100 text-rose-800 flex items-center justify-center font-bold shadow-2xs">
-              <Zap size={20} />
+    <div className="card p-4 sm:p-5 flex flex-col justify-between h-full min-w-0" style={{ background: 'var(--canvas-card)' }}>
+      <div className="min-w-0">
+        <div className="flex flex-col min-[480px]:flex-row min-[480px]:items-center gap-2.5 justify-between pb-3.5 border-b" style={{ borderColor: 'var(--border)' }}>
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-9 h-9 rounded-2xl bg-rose-100 text-rose-800 flex items-center justify-center shrink-0">
+              <Zap size={18} />
             </div>
-            <div>
-              <h3 className="text-xl font-extrabold font-display text-zinc-900">
-                Life Happens: Surprise Events
+            <div className="min-w-0">
+              <h3 className="text-base sm:text-lg font-extrabold font-display text-zinc-900 leading-tight">
+                Surprise Events
               </h3>
-              <p className="text-xs text-zinc-500 font-medium">
-                Test your resilience against random curveballs.
+              <p className="text-[11px] sm:text-xs text-zinc-500 font-medium">
+                Random curveballs to test resilience.
               </p>
             </div>
           </div>
 
           <button
             onClick={handleRollDice}
-            className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-extrabold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
+            className="w-full min-[480px]:w-auto px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all cursor-pointer whitespace-nowrap"
           >
             <Dice5 size={14} className="text-amber-400" />
             <span>Draw Event</span>
@@ -49,7 +49,7 @@ export const SurpriseEvents: React.FC = () => {
         </div>
 
         {/* Preset Events Row */}
-        <div className="mt-5 space-y-3">
+        <div className="mt-4 space-y-2.5">
           {RANDOM_SURPRISE_EVENTS.slice(0, 3).map((ev) => (
             <div
               key={ev.id}

@@ -311,6 +311,14 @@ export const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full" style={{ background: 'var(--canvas)' }}>
+      {/* Accessibility Skip Link */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-zinc-900 focus:text-white focus:rounded-xl focus:shadow-xl focus:font-bold"
+      >
+        Skip to main content
+      </a>
+
       <div className="mx-auto max-w-[1320px] px-3 sm:px-5 lg:px-6 py-3 sm:py-5 lg:flex lg:gap-6 lg:items-start">
 
         {/* ── Desktop sidebar: Wider, more prominent and impactful ── */}
@@ -374,24 +382,24 @@ export const AppContent: React.FC = () => {
             <span className="chip-soft shrink-0 !text-[11px] !px-2.5" style={{ background: active.bg, color: active.fg }}>{active.label.split(' ')[0]}</span>
           </div>
 
-          {/* Desktop App Heading: Large, high-impact & punchy */}
-          <div className="hidden lg:flex items-end justify-between gap-4 px-1 pt-1">
+          {/* Unified App Heading: Visible on all screens, perfectly accessible with a single h1 */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 px-1 pt-1">
             <div>
-              <h1 className="font-display font-black text-[34px] sm:text-[40px] tracking-tight leading-none text-zinc-900">
+              <h1 className="font-display font-black text-[28px] sm:text-[34px] lg:text-[40px] tracking-tight leading-none text-zinc-900">
                 Hey, money pilot 👋
               </h1>
-              <p className="text-[14.5px] font-bold mt-2" style={{ color: 'var(--text-2)' }}>
+              <p className="text-[13.5px] sm:text-[14.5px] font-bold mt-1.5 sm:mt-2" style={{ color: 'var(--text-2)' }}>
                 Keep your ₹10,000 alive for 30 days. No cap, pure financial survival.
               </p>
             </div>
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2 sm:gap-2.5">
               <button
                 onClick={() => setIsExpenseModalOpen(true)}
-                className="flex items-center gap-1.5 text-[12px] font-black px-4 py-2.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white shadow-xs transition-transform hover:scale-[1.02] cursor-pointer"
+                className="flex items-center gap-1.5 text-[11.5px] sm:text-[12px] font-black px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white shadow-xs transition-transform hover:scale-[1.02] cursor-pointer"
               >
                 <Plus size={14} className="text-amber-400" /> Log Today's Spend
               </button>
-              <div className="flex items-center gap-2 text-[12px] font-extrabold px-3.5 py-2.5 rounded-full bg-white border border-black/8 shadow-2xs" style={{ color: 'var(--text-2)' }}>
+              <div className="flex items-center gap-1.5 sm:gap-2 text-[11.5px] sm:text-[12px] font-extrabold px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-full bg-white border border-black/8 shadow-2xs" style={{ color: 'var(--text-2)' }}>
                 <Wallet size={15} className="text-emerald-600" /> ₹10,000 start
               </div>
             </div>
@@ -412,7 +420,7 @@ export const AppContent: React.FC = () => {
             </div>
           </div>
 
-          <main aria-label="Workspace" className="min-w-0">
+          <main id="main-content" aria-label="Workspace" className="min-w-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}

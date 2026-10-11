@@ -2,7 +2,7 @@
 > **A Gen Z Interactive Personal Finance Experience engineered for the PROMPT RUN Hackathon.**
 
 [![TypeScript Strict](https://img.shields.io/badge/TypeScript-Strict-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![Vitest](https://img.shields.io/badge/Vitest-27%2F27%20Passing-success?logo=vitest)](https://vitest.dev/)
+[![Vitest](https://img.shields.io/badge/Vitest-32%2F32%20Passing-success?logo=vitest)](https://vitest.dev/)
 [![Oxlint](https://img.shields.io/badge/Lint-0%20Warnings%20%7C%200%20Errors-brightgreen)](https://oxc-project.github.io/)
 [![Core Web Vitals](https://img.shields.io/badge/Core%20Web%20Vitals-Optimized-emerald)](#)
 [![Vercel Ready](https://img.shields.io/badge/Vercel-Deployment%20Ready-black?logo=vercel)](https://vercel.com/)

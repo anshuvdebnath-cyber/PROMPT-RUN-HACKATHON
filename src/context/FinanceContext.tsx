@@ -104,14 +104,16 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     rawTitle: string,
     rawAmount: number,
     category: TransactionCategory,
-    type: 'expense' | 'income'
+    type: 'expense' | 'income',
+    customDay?: number
   ) => {
     const title = sanitizeText(rawTitle) || (type === 'income' ? 'Income' : 'Expense')
     const amount = Math.max(1, Math.round(Number(rawAmount) || 0))
+    const day = customDay !== undefined ? Math.max(1, Math.min(30, customDay)) : currentDay
 
     const newTx: Transaction = {
-      id: `tx-${Date.now()}`,
-      day: currentDay,
+      id: `tx-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      day,
       title,
       amount,
       category,
@@ -123,7 +125,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     addToast(
       `${type === 'expense' ? 'Spent' : 'Received'} ₹${amount}`,
       type === 'expense' ? 'info' : 'success',
-      `"${title}" recorded on Day ${currentDay}`
+      `"${title}" recorded on Day ${day}`
     )
   }
 

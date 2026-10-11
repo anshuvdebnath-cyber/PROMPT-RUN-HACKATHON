@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import {
   Sparkles, LineChart, CreditCard, ShieldCheck, ReceiptText,
-  Menu, X, RotateCcw, CalendarDays, ChevronRight, Wallet,
+  Menu, X, RotateCcw, CalendarDays, ChevronRight, Wallet, Plus,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FinanceProvider } from './context/FinanceContext'
@@ -16,16 +16,17 @@ import { SurpriseEvents } from './components/SurpriseEvents'
 import { ExpenseLedger } from './components/ExpenseLedger'
 import { ToastContainer } from './components/ToastContainer'
 import { SurvivalCelebration } from './components/SurvivalCelebration'
+import { QuickExpenseModal } from './components/QuickExpenseModal'
 import { Mascot } from './components/Mascot'
 
 type ActiveTab = 'simulator' | 'runway' | 'commitments' | 'savings' | 'ledger'
 
 const NAV: { id: ActiveTab; label: string; hint: string; icon: React.ReactNode; bg: string; fg: string; accent: string }[] = [
-  { id: 'simulator',   label: 'Simulator',      hint: 'Test spends',   icon: <Sparkles size={17} />,    bg: '#FFF3C4', fg: '#854D0E', accent: '#FACC15' },
-  { id: 'runway',      label: 'Runway',         hint: '30-day curve',  icon: <LineChart size={17} />,   bg: '#FFE4E6', fg: '#9F1239', accent: '#FB7185' },
-  { id: 'commitments', label: 'Bills & Subs',   hint: 'Fixed costs',   icon: <CreditCard size={17} />,  bg: '#E9E4FF', fg: '#5B21B6', accent: '#8B5CF6' },
-  { id: 'savings',     label: 'Safety Net',     hint: 'Buffer + shocks', icon: <ShieldCheck size={17} />, bg: '#D9F5E5', fg: '#065F46', accent: '#22C55E' },
-  { id: 'ledger',      label: 'Ledger',         hint: 'History',       icon: <ReceiptText size={17} />, bg: '#DDF0FF', fg: '#0C4A6E', accent: '#0EA5E9' },
+  { id: 'simulator',   label: 'Simulator',           hint: 'Test spends',        icon: <Sparkles size={17} />,    bg: '#FFF3C4', fg: '#854D0E', accent: '#FACC15' },
+  { id: 'runway',      label: 'Runway',              hint: '30-day curve',       icon: <LineChart size={17} />,   bg: '#FFE4E6', fg: '#9F1239', accent: '#FB7185' },
+  { id: 'commitments', label: 'Bills & Subs',        hint: 'Fixed costs',        icon: <CreditCard size={17} />,  bg: '#E9E4FF', fg: '#5B21B6', accent: '#8B5CF6' },
+  { id: 'savings',     label: 'Safety Net',          hint: 'Buffer + shocks',    icon: <ShieldCheck size={17} />, bg: '#D9F5E5', fg: '#065F46', accent: '#22C55E' },
+  { id: 'ledger',      label: 'Daily Spends & Log',  hint: 'Add & track spends', icon: <ReceiptText size={17} />, bg: '#DDF0FF', fg: '#0C4A6E', accent: '#0EA5E9' },
 ]
 
 const SCENARIOS = [
@@ -34,14 +35,14 @@ const SCENARIOS = [
   { key: 'survivor', label: 'Survivor', emoji: '🔥', bg: '#FFE4E6', fg: '#9F1239' },
 ] as const
 
-function SidebarBody({ activeTab, setActiveTab, onNavigate }: { activeTab: ActiveTab; setActiveTab: (t: ActiveTab) => void; onNavigate?: () => void }) {
+function SidebarBody({ activeTab, setActiveTab, onNavigate, onOpenExpenseModal }: { activeTab: ActiveTab; setActiveTab: (t: ActiveTab) => void; onNavigate?: () => void; onOpenExpenseModal: () => void }) {
   const { currentDay, effectiveMetrics, loadPresetScenario, resetAll } = useFinance()
   const pct = Math.round(((currentDay - 1) / 29) * 100)
 
   return (
     <div className="flex flex-col h-full min-h-0">
       {/* Brand */}
-      <div className="flex items-center gap-3 px-2 pt-1 pb-5">
+      <div className="flex items-center gap-3 px-2 pt-1 pb-4">
         <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl shrink-0" style={{ background: '#221C15' }}>
           💸
         </div>
@@ -51,8 +52,19 @@ function SidebarBody({ activeTab, setActiveTab, onNavigate }: { activeTab: Activ
         </div>
       </div>
 
+      {/* Quick Add Button in Sidebar */}
+      <div className="mx-1 mb-4">
+        <button
+          onClick={() => { onOpenExpenseModal(); onNavigate?.() }}
+          className="w-full py-2.5 px-3 rounded-2xl font-extrabold text-xs text-white bg-rose-500 hover:bg-rose-600 shadow-xs flex items-center justify-center gap-2 transition-all hover:scale-[1.02] cursor-pointer"
+        >
+          <Plus size={15} />
+          <span>+ Log Today's Spend</span>
+        </button>
+      </div>
+
       {/* Month progress */}
-      <div className="mx-1 mb-5 p-4 rounded-[20px]" style={{ background: 'var(--canvas-inset)' }}>
+      <div className="mx-1 mb-4 p-3.5 rounded-[20px]" style={{ background: 'var(--canvas-inset)' }}>
         <div className="flex items-center justify-between mb-2">
           <span className="text-[11px] font-extrabold uppercase tracking-[0.1em]" style={{ color: 'var(--text-2)' }}>
             Day {currentDay} / 30
@@ -102,7 +114,7 @@ function SidebarBody({ activeTab, setActiveTab, onNavigate }: { activeTab: Activ
       </nav>
 
       {/* Scenarios */}
-      <div className="mt-auto pt-5 px-1">
+      <div className="mt-auto pt-4 px-1">
         <p className="text-[11px] font-extrabold uppercase tracking-[0.12em] px-2 mb-2" style={{ color: 'var(--text-3)' }}>
           Jump in time
         </p>
@@ -130,7 +142,7 @@ function SidebarBody({ activeTab, setActiveTab, onNavigate }: { activeTab: Activ
   )
 }
 
-function TopDayBar() {
+function TopDayBar({ onOpenExpenseModal }: { onOpenExpenseModal: () => void }) {
   const { currentDay, setDay, advanceDay, simulation } = useFinance()
   const progress = ((currentDay - 1) / 29) * 100
 
@@ -147,6 +159,7 @@ function TopDayBar() {
           </p>
         </div>
       </div>
+
       <div className="flex items-center gap-2.5 flex-1 min-w-0">
         <span className="text-[11px] font-bold text-zinc-400 shrink-0">D1</span>
         <div className="relative flex-1 min-w-0 py-1">
@@ -155,14 +168,25 @@ function TopDayBar() {
         </div>
         <span className="text-[11px] font-bold text-zinc-400 shrink-0">D30</span>
       </div>
-      <button
-        onClick={advanceDay}
-        disabled={currentDay >= 30}
-        className="w-full md:w-auto shrink-0 flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-2xl font-bold text-[13px] text-white disabled:opacity-35 transition-all hover:brightness-110 cursor-pointer"
-        style={{ background: 'var(--ink)' }}
-      >
-        Next day <ChevronRight size={15} />
-      </button>
+
+      <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
+        <button
+          onClick={onOpenExpenseModal}
+          className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-2xl font-extrabold text-[13px] bg-rose-500 hover:bg-rose-600 text-white shadow-xs transition-all hover:scale-[1.02] cursor-pointer"
+          title="Record an expense for today"
+        >
+          <Plus size={15} /> Add Expense
+        </button>
+
+        <button
+          onClick={advanceDay}
+          disabled={currentDay >= 30}
+          className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-[13px] text-white disabled:opacity-35 transition-all hover:brightness-110 cursor-pointer"
+          style={{ background: 'var(--ink)' }}
+        >
+          Next day <ChevronRight size={15} />
+        </button>
+      </div>
     </div>
   )
 }
@@ -170,6 +194,8 @@ function TopDayBar() {
 export const AppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('simulator')
   const [drawer, setDrawer] = useState(false)
+  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false)
+  const { currentDay } = useFinance()
   const active = NAV.find((n) => n.id === activeTab)!
 
   return (
@@ -178,7 +204,11 @@ export const AppContent: React.FC = () => {
 
         {/* ── Desktop sidebar ── */}
         <aside className="hidden lg:block w-[264px] shrink-0 sticky top-5 h-[calc(100vh-40px)] rounded-[26px] border p-4 overflow-y-auto no-scrollbar" style={{ background: 'var(--sidebar-bg)', borderColor: 'var(--border-soft)', boxShadow: 'var(--shadow-card)' }}>
-          <FinanceSidebarWrap activeTab={activeTab} setActiveTab={setActiveTab} />
+          <FinanceSidebarWrap
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            onOpenExpenseModal={() => setIsExpenseModalOpen(true)}
+          />
         </aside>
 
         {/* ── Mobile drawer ── */}
@@ -197,7 +227,12 @@ export const AppContent: React.FC = () => {
                     <X size={16} />
                   </button>
                 </div>
-                <FinanceSidebarWrap activeTab={activeTab} setActiveTab={setActiveTab} onNavigate={() => setDrawer(false)} />
+                <FinanceSidebarWrap
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
+                  onNavigate={() => setDrawer(false)}
+                  onOpenExpenseModal={() => { setDrawer(false); setIsExpenseModalOpen(true) }}
+                />
               </motion.div>
             </motion.div>
           )}
@@ -206,18 +241,24 @@ export const AppContent: React.FC = () => {
         {/* ── Main column ── */}
         <div className="flex-1 min-w-0 space-y-3.5 sm:space-y-5 pb-24 lg:pb-10">
           {/* Mobile top bar */}
-          <div className="lg:hidden card px-4 py-3 flex items-center gap-3">
-            <button onClick={() => setDrawer(true)} className="w-10 h-10 rounded-2xl flex items-center justify-center cursor-pointer shrink-0" style={{ background: 'var(--ink)', color: '#fff' }} aria-label="Open menu">
-              <Menu size={18} />
+          <div className="lg:hidden card px-3.5 py-3 flex items-center gap-2.5">
+            <button onClick={() => setDrawer(true)} className="w-9 h-9 rounded-2xl flex items-center justify-center cursor-pointer shrink-0" style={{ background: 'var(--ink)', color: '#fff' }} aria-label="Open menu">
+              <Menu size={16} />
             </button>
-            <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <span className="text-2xl shrink-0">💸</span>
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <span className="text-xl shrink-0">💸</span>
               <div className="min-w-0">
-                <p className="font-display font-bold text-[15px] leading-tight truncate">Broke But Functional</p>
-                <p className="text-[11px] font-semibold" style={{ color: 'var(--text-3)' }}>₹10k · 30-day survival</p>
+                <p className="font-display font-bold text-[14px] leading-tight truncate">Broke But Functional</p>
+                <p className="text-[10px] font-semibold" style={{ color: 'var(--text-3)' }}>Day {currentDay} · ₹10k</p>
               </div>
             </div>
-            <span className="chip-soft shrink-0" style={{ background: active.bg, color: active.fg }}>{active.label}</span>
+            <button
+              onClick={() => setIsExpenseModalOpen(true)}
+              className="px-3 py-1.5 rounded-xl font-extrabold text-[11px] bg-rose-500 text-white flex items-center gap-1 shrink-0 cursor-pointer shadow-2xs"
+            >
+              <Plus size={13} /> Spend
+            </button>
+            <span className="chip-soft shrink-0 !text-[11px] !px-2.5" style={{ background: active.bg, color: active.fg }}>{active.label.split(' ')[0]}</span>
           </div>
 
           {/* Desktop greeting */}
@@ -228,12 +269,20 @@ export const AppContent: React.FC = () => {
                 Test a spend, watch your runway move. Small choices, big month.
               </p>
             </div>
-            <div className="flex items-center gap-2 text-[12px] font-bold px-3.5 py-2 rounded-full bg-white border border-black/5" style={{ color: 'var(--text-2)' }}>
-              <Wallet size={14} /> ₹10,000 start
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={() => setIsExpenseModalOpen(true)}
+                className="flex items-center gap-1.5 text-[12px] font-extrabold px-4 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-white shadow-xs transition-transform hover:scale-[1.02] cursor-pointer"
+              >
+                <Plus size={14} className="text-amber-400" /> Log Today's Spend
+              </button>
+              <div className="flex items-center gap-2 text-[12px] font-bold px-3.5 py-2 rounded-full bg-white border border-black/5" style={{ color: 'var(--text-2)' }}>
+                <Wallet size={14} /> ₹10,000 start
+              </div>
             </div>
           </div>
 
-          <TopDayBar />
+          <TopDayBar onOpenExpenseModal={() => setIsExpenseModalOpen(true)} />
           <HeroVibeBanner />
           <MetricCards />
 
@@ -277,6 +326,16 @@ export const AppContent: React.FC = () => {
         </div>
       </div>
 
+      {/* ── Mobile Floating Action Button ── */}
+      <button
+        onClick={() => setIsExpenseModalOpen(true)}
+        className="lg:hidden fixed bottom-20 right-4 z-40 px-4 py-2.5 rounded-full bg-zinc-900 text-white font-extrabold text-xs shadow-xl flex items-center gap-1.5 border border-white/20 active:scale-95 transition-transform cursor-pointer"
+        aria-label="Add Daily Expense"
+      >
+        <Plus size={15} className="text-amber-400" />
+        <span>+ Add Spend</span>
+      </button>
+
       {/* ── Mobile bottom nav ── */}
       <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 px-3 pb-3 pt-2" style={{ background: 'linear-gradient(to top, var(--canvas) 70%, transparent)' }} aria-label="Mobile">
         <div className="card !rounded-[22px] px-2 py-2 flex items-center justify-between gap-1" style={{ boxShadow: 'var(--shadow-pop)' }}>
@@ -295,6 +354,11 @@ export const AppContent: React.FC = () => {
         </div>
       </nav>
 
+      {/* Global Modals & Notifications */}
+      <QuickExpenseModal
+        isOpen={isExpenseModalOpen}
+        onClose={() => setIsExpenseModalOpen(false)}
+      />
       <ToastContainer />
       <SurvivalCelebration />
     </div>
@@ -302,7 +366,7 @@ export const AppContent: React.FC = () => {
 }
 
 // Sidebar needs finance context — wrap so App (provider) stays on top
-function FinanceSidebarWrap(props: { activeTab: ActiveTab; setActiveTab: (t: ActiveTab) => void; onNavigate?: () => void }) {
+function FinanceSidebarWrap(props: { activeTab: ActiveTab; setActiveTab: (t: ActiveTab) => void; onNavigate?: () => void; onOpenExpenseModal: () => void }) {
   return <SidebarBody {...props} />
 }
 

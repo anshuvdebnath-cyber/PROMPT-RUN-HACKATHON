@@ -31,7 +31,8 @@ export interface FinanceContextType {
     title: string,
     amount: number,
     category: TransactionCategory,
-    type: 'expense' | 'income'
+    type: 'expense' | 'income',
+    day?: number
   ) => void
   deleteTransaction: (id: string) => void
   toggleCommitmentPaid: (id: string) => void

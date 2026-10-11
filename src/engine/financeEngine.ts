@@ -237,6 +237,23 @@ export function evaluateFinancialHealth(
  * Pace-aware: compares actual daily burn against the safe cap so every
  * meaningful spend visibly moves the mascot, with quips citing real numbers.
  */
+/**
+ * Helper to compute instantaneous mascot reaction to a specific expense amount
+ */
+export function getMoodForExpenseAmount(amount: number): MascotMood {
+  if (amount <= 100) return 'excited'
+  if (amount <= 300) return 'joyful'
+  if (amount <= 600) return 'grateful'
+  if (amount <= 1100) return 'stressed'
+  if (amount <= 2000) return 'angry'
+  return 'hurt'
+}
+
+/**
+ * Intelligent Gen-Z mood and relatable quip selector.
+ * Directly and sensitively tracks monthly expenses, liquid cash balance,
+ * daily allowance, and burn pace so every spend visibly moves the mascot.
+ */
 function selectMascotMoodAndQuip(
   score: number,
   risk: FinancialHealthMetrics['riskLevel'],
@@ -248,8 +265,9 @@ function selectMascotMoodAndQuip(
   burnRate: number
 ): { mood: MascotMood; quip: string } {
   const burnRatio = allowance > 0 ? burnRate / allowance : burnRate > 0 ? 99 : 0
-  const overspending = burnRatio > 1.2
+  const overspending = burnRatio > 1.25
 
+  // 1. Critical exhaustion / Tears
   if (balance <= 0) {
     return {
       mood: 'hurt',
@@ -257,69 +275,48 @@ function selectMascotMoodAndQuip(
     }
   }
 
-  if (risk === 'Critical Doom') {
-    if (balance < 500) {
-      return {
-        mood: 'hurt',
-        quip: `Wallet is literally in tears. Only ₹${balance} left with ${30 - day} days to go!`,
-      }
+  if (balance < 800 || spent >= 8800) {
+    return {
+      mood: 'hurt',
+      quip: `Wallet is literally in tears. Only ₹${balance.toLocaleString('en-IN')} left with ${30 - day} days to go!`,
     }
+  }
+
+  // 2. High danger / Critical Doom / Heavy Spends
+  if (risk === 'Critical Doom' || balance < 2200 || spent >= 6800 || projectedEnd < -500) {
     return {
       mood: 'angry',
-      quip: `Emergency alert! Projected to end month at -₹${Math.abs(projectedEnd)}. Freeze spending now!`,
+      quip: `Emergency alert! Burned ₹${spent.toLocaleString('en-IN')} out of ₹10k. Only ₹${balance.toLocaleString('en-IN')} left! Freeze spending now!`,
     }
   }
 
-  if (risk === 'High Alert') {
+  // 3. Stressed / Sweating / High burn
+  if (risk === 'High Alert' || balance < 4500 || spent >= 4500 || overspending || allowance < 120) {
     return {
       mood: 'stressed',
-      quip: `Sweating bullets. Burned ₹${spent.toLocaleString('en-IN')} so far (₹${burnRate}/day vs a ₹${allowance} cap). Instant ramen diet inbound.`,
+      quip: `Sweating bullets. Torched ₹${spent.toLocaleString('en-IN')} so far (₹${burnRate}/day vs a ₹${allowance} cap). Instant ramen diet inbound.`,
     }
   }
 
-  if (risk === 'Moderate') {
-    if (overspending) {
-      return {
-        mood: 'stressed',
-        quip: `Pace check: you're torching ₹${burnRate}/day against a ₹${allowance} cap after spending ₹${spent.toLocaleString('en-IN')}. Slow down!`,
-      }
-    }
-    if (allowance < 180) {
-      return {
-        mood: 'stressed',
-        quip: `Tight squeeze. One rogue coffee and the weekly budget folds. Tread lightly!`,
-      }
-    }
+  // 4. Grateful / Mindful middle ground
+  if (risk === 'Moderate' || balance < 7000 || spent >= 2200 || allowance < 220) {
     return {
       mood: 'grateful',
-      quip: `Floating along. Not broke, but definitely can't afford main character energy today.`,
+      quip: `Floating along. Spent ₹${spent.toLocaleString('en-IN')} so far. Not broke, but definitely mindful of upcoming bills.`,
     }
   }
 
-  // Safe status — still react to pace so big spends visibly dent the vibe
-  if (overspending) {
+  // 5. Joyful / Smooth living
+  if (balance < 8800 || spent >= 800) {
     return {
       mood: 'joyful',
-      quip: `Covered for now, but ₹${burnRate}/day vs a ₹${allowance} cap is spicy. That ₹${spent.toLocaleString('en-IN')} spend left a mark!`,
+      quip: `Vibes immaculate. ₹${spent.toLocaleString('en-IN')} spent with solid buffer left. Commitments covered and guilt-free daily allowance is steady.`,
     }
   }
 
-  if (score >= 90) {
-    return {
-      mood: 'excited',
-      quip: `Financial god tier! Dynamic cap is ₹${allowance}/day. Month survival rate at peak!`,
-    }
-  }
-
-  if (score >= 80) {
-    return {
-      mood: 'joyful',
-      quip: `Vibes immaculate. Commitments covered and guilt-free daily allowance is steady.`,
-    }
-  }
-
+  // 6. Excited / Peak condition (Day 1 - fresh ₹10k pool)
   return {
-    mood: 'grateful',
-    quip: `Solid pace. Bills are prepped and you are comfortably on track to day 30.`,
+    mood: 'excited',
+    quip: `Financial god tier! Fresh ₹${balance.toLocaleString('en-IN')} pool intact. Dynamic cap is ₹${allowance}/day. Peak vibes!`,
   }
 }

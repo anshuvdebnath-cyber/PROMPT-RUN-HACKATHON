@@ -104,9 +104,7 @@ export const HeroVibeBanner: React.FC = () => {
 
           {/* Health ring */}
           <div className="shrink-0 flex justify-center md:justify-end">
-            <div className="bg-white/90 border border-black/5 rounded-[24px] p-3" style={{ boxShadow: 'var(--shadow-card)' }}>
-              <HealthScoreRing metrics={effectiveMetrics} size={118} />
-            </div>
+            <HealthScoreRing metrics={effectiveMetrics} size={110} />
           </div>
         </div>
       </motion.div>

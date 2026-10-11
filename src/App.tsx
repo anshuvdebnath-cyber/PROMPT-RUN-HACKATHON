@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import {
   Sparkles, LineChart, CreditCard, ShieldCheck, ReceiptText,
-  Menu, X, RotateCcw, CalendarDays, ChevronRight, Wallet, Plus,
+  Menu, X, RotateCcw, CalendarDays, ChevronRight, ChevronLeft, Wallet, Plus, SlidersHorizontal,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FinanceProvider } from './context/FinanceContext'
@@ -18,6 +18,8 @@ import { ToastContainer } from './components/ToastContainer'
 import { SurvivalCelebration } from './components/SurvivalCelebration'
 import { QuickExpenseModal } from './components/QuickExpenseModal'
 import { Mascot } from './components/Mascot'
+import { TransactionCategory } from './types/finance'
+import { getMoodForExpenseAmount } from './engine/financeEngine'
 
 type ActiveTab = 'simulator' | 'runway' | 'commitments' | 'savings' | 'ledger'
 
@@ -35,16 +37,23 @@ const SCENARIOS = [
   { key: 'survivor', label: 'Survivor', emoji: '🔥', bg: '#FFE4E6', fg: '#9F1239' },
 ] as const
 
+// Sleek modern SVG brand mark (replaces emoji logo)
+const BrandLogo: React.FC<{ size?: number }> = ({ size = 22 }) => (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+  </svg>
+)
+
 function SidebarBody({ activeTab, setActiveTab, onNavigate, onOpenExpenseModal }: { activeTab: ActiveTab; setActiveTab: (t: ActiveTab) => void; onNavigate?: () => void; onOpenExpenseModal: () => void }) {
   const { currentDay, effectiveMetrics, loadPresetScenario, resetAll } = useFinance()
   const pct = Math.round(((currentDay - 1) / 29) * 100)
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      {/* Brand */}
+      {/* Brand without emoji */}
       <div className="flex items-center gap-3 px-2 pt-1 pb-4">
-        <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl shrink-0" style={{ background: '#221C15' }}>
-          💸
+        <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 border border-amber-400/30 text-amber-300 shadow-2xs" style={{ background: '#221C15' }}>
+          <BrandLogo size={22} />
         </div>
         <div className="min-w-0">
           <p className="font-display font-bold text-[17px] leading-tight truncate">Broke But<br />Functional</p>
@@ -81,8 +90,8 @@ function SidebarBody({ activeTab, setActiveTab, onNavigate, onOpenExpenseModal }
             transition={{ type: 'spring', stiffness: 120, damping: 20 }}
           />
         </div>
-        <div className="flex items-center gap-2 mt-3">
-          <Mascot mood={effectiveMetrics.mascotMood} size={34} />
+        <div className="flex items-center gap-2.5 mt-3">
+          <Mascot mood={effectiveMetrics.mascotMood} size={36} />
           <p className="text-xs font-semibold leading-snug truncate" style={{ color: 'var(--text-2)' }}>
             {effectiveMetrics.riskLevel} risk · {effectiveMetrics.survivalProbability}% odds
           </p>
@@ -142,50 +151,147 @@ function SidebarBody({ activeTab, setActiveTab, onNavigate, onOpenExpenseModal }
   )
 }
 
+/**
+ * Top bar equipped with:
+ * 1. Compact Day Stepper (Day 1..30)
+ * 2. Daily Spend Slider (Slide how much money you spent today for what)
+ * 3. In-place persistent Morphing Mascot watching the spend slider live!
+ */
 function TopDayBar({ onOpenExpenseModal }: { onOpenExpenseModal: () => void }) {
-  const { currentDay, setDay, advanceDay, simulation } = useFinance()
-  const progress = ((currentDay - 1) / 29) * 100
+  const { currentDay, setDay, advanceDay, addTransaction } = useFinance()
+
+  const [sliderAmount, setSliderAmount] = useState<number>(140)
+  const [category, setCategory] = useState<TransactionCategory>('Food & Dining')
+  const [itemNote, setItemNote] = useState<string>('Lunch & Snack')
+
+  const sliderMood = getMoodForExpenseAmount(sliderAmount)
+  const sliderPct = Math.min(100, (sliderAmount / 1500) * 100)
+
+  const handleRecordSliderSpend = () => {
+    if (sliderAmount <= 0) return
+    const title = itemNote.trim() || `${category} spend`
+    addTransaction(title, sliderAmount, category, 'expense', currentDay)
+    setItemNote('')
+  }
 
   return (
-    <div className="card px-4 sm:px-5 py-3.5 flex flex-col gap-3 md:flex-row md:items-center">
-      <div className="flex items-center gap-2.5 shrink-0">
-        <span className="w-9 h-9 rounded-xl flex items-center justify-center text-white shrink-0" style={{ background: 'var(--ink)' }}>
-          <CalendarDays size={16} />
-        </span>
-        <div className="leading-tight">
-          <p className="font-display font-bold text-[15px]">Day {currentDay} <span className="font-medium text-zinc-400">of 30</span></p>
-          <p className="text-[11px] font-semibold" style={{ color: 'var(--text-3)' }}>
-            {simulation.isActive ? '⚡ Sandbox previewing' : currentDay >= 30 ? '🎉 Month complete' : `${30 - currentDay} days to survive`}
-          </p>
+    <div className="card px-3.5 sm:px-5 py-3.5 flex flex-col gap-3.5 lg:flex-row lg:items-center justify-between" style={{ background: 'var(--canvas-card)' }}>
+      {/* Left: Compact Timeline Stepper */}
+      <div className="flex items-center justify-between lg:justify-start gap-2.5 shrink-0">
+        <div className="flex items-center gap-2">
+          <span className="w-9 h-9 rounded-xl flex items-center justify-center text-white shrink-0" style={{ background: 'var(--ink)' }}>
+            <CalendarDays size={16} />
+          </span>
+          <div className="leading-tight">
+            <p className="font-display font-bold text-[15px]">Day {currentDay} <span className="font-medium text-zinc-400">/ 30</span></p>
+            <p className="text-[11px] font-semibold" style={{ color: 'var(--text-3)' }}>
+              {30 - currentDay}d remaining
+            </p>
+          </div>
+        </div>
+
+        {/* Stepper buttons (prev & next) */}
+        <div className="flex items-center gap-1.5 ml-2">
+          <button
+            onClick={() => setDay(currentDay - 1)}
+            disabled={currentDay <= 1}
+            className="w-8 h-8 rounded-xl bg-black/5 hover:bg-black/10 disabled:opacity-30 flex items-center justify-center text-zinc-700 cursor-pointer transition-colors"
+            title="Previous day"
+            aria-label="Previous day"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <button
+            onClick={advanceDay}
+            disabled={currentDay >= 30}
+            className="w-8 h-8 rounded-xl bg-black/5 hover:bg-black/10 disabled:opacity-30 flex items-center justify-center text-zinc-700 cursor-pointer transition-colors"
+            title="Next day"
+            aria-label="Next day"
+          >
+            <ChevronRight size={16} />
+          </button>
         </div>
       </div>
 
-      <div className="flex items-center gap-2.5 flex-1 min-w-0">
-        <span className="text-[11px] font-bold text-zinc-400 shrink-0">D1</span>
-        <div className="relative flex-1 min-w-0 py-1">
-          <div className="absolute top-1/2 left-0 h-2 rounded-full -translate-y-1/2 pointer-events-none transition-all" style={{ width: `${progress}%`, background: 'var(--ink)' }} />
-          <input type="range" min={1} max={30} value={currentDay} onChange={(e) => setDay(Number(e.target.value))} aria-label="Select day" className="relative" style={{ zIndex: 2 }} />
+      {/* Center & Right: Daily Spend Slider ("How much money spent today for what") */}
+      <div className="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 lg:mx-4 p-2.5 sm:p-3 rounded-2xl border" style={{ background: 'var(--canvas-inset)', borderColor: 'var(--border)' }}>
+        {/* In-Place Morphing Mascot reacting to slider amount */}
+        <div className="shrink-0 flex items-center justify-center">
+          <Mascot mood={sliderMood} size={42} />
         </div>
-        <span className="text-[11px] font-bold text-zinc-400 shrink-0">D30</span>
-      </div>
 
-      <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
-        <button
-          onClick={onOpenExpenseModal}
-          className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-2xl font-extrabold text-[13px] bg-rose-500 hover:bg-rose-600 text-white shadow-xs transition-all hover:scale-[1.02] cursor-pointer"
-          title="Record an expense for today"
-        >
-          <Plus size={15} /> Add Expense
-        </button>
+        {/* Slider & amount controls */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2 mb-1.5">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-zinc-400 flex items-center gap-1">
+              <SlidersHorizontal size={12} /> Today's Spend:
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="font-display font-extrabold text-sm text-zinc-900">
+                ₹{sliderAmount}
+              </span>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value as TransactionCategory)}
+                className="text-[11px] font-bold py-0.5 px-2 rounded-lg bg-white border border-black/10 text-zinc-700 focus:outline-none cursor-pointer"
+              >
+                <option value="Food & Dining">Food & Dining</option>
+                <option value="Transport & Commute">Transport & Commute</option>
+                <option value="Shopping & Essentials">Shopping & Essentials</option>
+                <option value="Entertainment & Outings">Entertainment</option>
+                <option value="Bills & Utilities">Bills & Utilities</option>
+                <option value="Unexpected & Emergency">Emergency</option>
+              </select>
+            </div>
+          </div>
 
-        <button
-          onClick={advanceDay}
-          disabled={currentDay >= 30}
-          className="flex-1 md:flex-initial flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-2xl font-bold text-[13px] text-white disabled:opacity-35 transition-all hover:brightness-110 cursor-pointer"
-          style={{ background: 'var(--ink)' }}
-        >
-          Next day <ChevronRight size={15} />
-        </button>
+          {/* Smooth Range Slider */}
+          <div className="relative py-1">
+            <div
+              className="absolute top-1/2 left-0 h-2 rounded-full -translate-y-1/2 pointer-events-none transition-all"
+              style={{
+                width: `${sliderPct}%`,
+                background: sliderAmount > 1000 ? '#FB7185' : sliderAmount > 500 ? '#F97316' : '#22C55E',
+              }}
+            />
+            <input
+              type="range"
+              min={10}
+              max={1500}
+              step={10}
+              value={sliderAmount}
+              onChange={(e) => setSliderAmount(Number(e.target.value))}
+              className="relative w-full cursor-pointer"
+              style={{ zIndex: 2 }}
+              aria-label="How much money spent today"
+            />
+          </div>
+        </div>
+
+        {/* Note input & Log button */}
+        <div className="flex items-center gap-2 shrink-0">
+          <input
+            type="text"
+            placeholder="Note (e.g. Lunch)"
+            value={itemNote}
+            onChange={(e) => setItemNote(e.target.value)}
+            className="w-24 sm:w-28 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-black/10 focus:outline-none focus:ring-1 focus:ring-zinc-900"
+          />
+          <button
+            onClick={handleRecordSliderSpend}
+            className="px-3.5 py-1.5 rounded-xl font-extrabold text-xs text-white bg-zinc-900 hover:bg-zinc-800 shadow-2xs transition-transform hover:scale-[1.02] cursor-pointer whitespace-nowrap"
+          >
+            Log ₹{sliderAmount}
+          </button>
+          <button
+            onClick={onOpenExpenseModal}
+            className="p-1.5 rounded-xl bg-white hover:bg-zinc-100 border border-black/10 text-zinc-600 transition-colors cursor-pointer"
+            title="Open advanced expense form"
+            aria-label="Open advanced expense form"
+          >
+            <Plus size={15} />
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -240,13 +346,15 @@ export const AppContent: React.FC = () => {
 
         {/* ── Main column ── */}
         <div className="flex-1 min-w-0 space-y-3.5 sm:space-y-5 pb-24 lg:pb-10">
-          {/* Mobile top bar */}
+          {/* Mobile top bar without emoji */}
           <div className="lg:hidden card px-3.5 py-3 flex items-center gap-2.5">
             <button onClick={() => setDrawer(true)} className="w-9 h-9 rounded-2xl flex items-center justify-center cursor-pointer shrink-0" style={{ background: 'var(--ink)', color: '#fff' }} aria-label="Open menu">
               <Menu size={16} />
             </button>
             <div className="flex items-center gap-2 min-w-0 flex-1">
-              <span className="text-xl shrink-0">💸</span>
+              <span className="w-7 h-7 rounded-lg bg-zinc-900 text-amber-300 flex items-center justify-center shrink-0">
+                <BrandLogo size={15} />
+              </span>
               <div className="min-w-0">
                 <p className="font-display font-bold text-[14px] leading-tight truncate">Broke But Functional</p>
                 <p className="text-[10px] font-semibold" style={{ color: 'var(--text-3)' }}>Day {currentDay} · ₹10k</p>
@@ -266,7 +374,7 @@ export const AppContent: React.FC = () => {
             <div>
               <h1 className="font-display font-bold text-[28px] leading-tight">Hey, money pilot 👋</h1>
               <p className="text-[13.5px] font-medium" style={{ color: 'var(--text-2)' }}>
-                Test a spend, watch your runway move. Small choices, big month.
+                Slide today's spend or test a choice. Watch your vibe and runway respond in real-time.
               </p>
             </div>
             <div className="flex items-center gap-2.5">

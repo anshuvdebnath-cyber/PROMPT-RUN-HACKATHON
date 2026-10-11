@@ -9,21 +9,29 @@ interface HealthScoreRingProps {
 
 export const HealthScoreRing: React.FC<HealthScoreRingProps> = ({
   metrics,
-  size = 145,
+  size = 110,
 }) => {
-  // Score out of 10 for editorial display (like 8.8 in reference image)
+  // Score out of 10 for editorial display (like 7.6 / 10)
   const scoreOutOfTen = (metrics.score / 10).toFixed(1)
 
   // Segment stroke properties
-  const strokeWidth = 12
+  const strokeWidth = 11
   const radius = 54
   const circumference = 2 * Math.PI * radius // ~339.3
 
+  // Dynamic grade pill styling
+  const gradeColor =
+    metrics.score >= 80
+      ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+      : metrics.score >= 60
+      ? 'bg-amber-100 text-amber-900 border border-amber-200'
+      : 'bg-rose-100 text-rose-800 border border-rose-200'
+
   return (
     <div
-      className="relative flex flex-col items-center justify-center p-3.5 bg-white/90 backdrop-blur-md rounded-[26px] border border-black/8 shadow-xs"
+      className="relative flex flex-col items-center justify-center p-3.5 bg-white/95 rounded-[26px] border border-black/8 shadow-2xs select-none"
       role="region"
-      aria-label={`Financial Health Score: ${metrics.score} out of 100`}
+      aria-label={`Financial Health Score: ${metrics.score} out of 100, Grade ${metrics.grade}`}
     >
       <div
         className="relative flex items-center justify-center"
@@ -33,7 +41,7 @@ export const HealthScoreRing: React.FC<HealthScoreRingProps> = ({
           viewBox="0 0 140 140"
           width={size}
           height={size}
-          className="transform -rotate-90 block"
+          className="transform -rotate-90 block overflow-visible"
         >
           {/* Background track circle */}
           <circle
@@ -45,7 +53,7 @@ export const HealthScoreRing: React.FC<HealthScoreRingProps> = ({
             strokeWidth={strokeWidth}
           />
 
-          {/* Segment 1: Liquidity (Yellow) */}
+          {/* Segment 1: Liquidity Solvency (Yellow) */}
           <motion.circle
             cx="70"
             cy="70"
@@ -77,7 +85,7 @@ export const HealthScoreRing: React.FC<HealthScoreRingProps> = ({
             transition={{ duration: 0.9, delay: 0.1, ease: 'easeOut' }}
           />
 
-          {/* Segment 3: Savings (Blush Pink) */}
+          {/* Segment 3: Savings buffer (Blush Pink) */}
           <motion.circle
             cx="70"
             cy="70"
@@ -93,7 +101,7 @@ export const HealthScoreRing: React.FC<HealthScoreRingProps> = ({
             transition={{ duration: 1, delay: 0.2, ease: 'easeOut' }}
           />
 
-          {/* Segment 4: Commitments (Lavender) */}
+          {/* Segment 4: Commitments reserved (Lavender) */}
           <motion.circle
             cx="70"
             cy="70"
@@ -110,31 +118,27 @@ export const HealthScoreRing: React.FC<HealthScoreRingProps> = ({
           />
         </svg>
 
-        {/* Center Display: Score & Grade */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none px-2">
+        {/* Center Display: Clean score & label without overlapping the ring */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
           <motion.span
             key={scoreOutOfTen}
-            initial={{ scale: 0.8, opacity: 0 }}
+            initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="text-3xl font-extrabold tracking-tight font-display text-zinc-900 leading-none"
+            className="text-2xl sm:text-3xl font-extrabold tracking-tight font-display text-zinc-900 leading-none"
           >
             {scoreOutOfTen}
           </motion.span>
-          <span className="text-[9px] font-extrabold text-zinc-400 uppercase tracking-widest mt-1">
-            Health Score
-          </span>
-          <span
-            className={`text-[10px] font-extrabold px-2 py-0.5 mt-1 rounded-full ${
-              metrics.score >= 80
-                ? 'bg-emerald-100 text-emerald-800'
-                : metrics.score >= 60
-                ? 'bg-amber-100 text-amber-800'
-                : 'bg-rose-100 text-rose-800'
-            }`}
-          >
-            Grade {metrics.grade}
+          <span className="text-[9px] font-extrabold text-zinc-400 uppercase tracking-wider mt-1">
+            Score
           </span>
         </div>
+      </div>
+
+      {/* Grade Pill Badge placed cleanly below the ring */}
+      <div className="mt-2 text-center w-full">
+        <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full inline-block ${gradeColor}`}>
+          Grade {metrics.grade}
+        </span>
       </div>
     </div>
   )

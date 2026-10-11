@@ -4,6 +4,7 @@ import { X, Plus, TrendingDown, TrendingUp, Calendar, Tag, ArrowRight } from 'lu
 import { useFinance } from '../context/useFinance'
 import { TransactionCategory } from '../types/finance'
 import { Mascot } from './Mascot'
+import { getMoodForExpenseAmount } from '../engine/financeEngine'
 
 interface QuickExpenseModalProps {
   isOpen: boolean
@@ -49,6 +50,11 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({ isOpen, on
     ? Math.round(numAmount / daysLeft)
     : Math.round(numAmount / daysLeft)
 
+  // Dynamic live mood reactive to the expense amount
+  const reactiveMood = type === 'expense'
+    ? getMoodForExpenseAmount(numAmount)
+    : 'excited'
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim() || numAmount <= 0) return
@@ -88,14 +94,11 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({ isOpen, on
           style={{ background: 'var(--canvas-card)' }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header */}
+          {/* Header with Persistent Morphing Mascot */}
           <div className="flex items-center justify-between pb-4 border-b border-black/8">
-            <div className="flex items-center gap-3 min-w-0">
-              <div
-                className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0"
-                style={{ background: type === 'expense' ? '#FFE4E6' : '#D9F5E5', color: type === 'expense' ? '#9F1239' : '#065F46' }}
-              >
-                {type === 'expense' ? <TrendingDown size={22} /> : <TrendingUp size={22} />}
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="shrink-0">
+                <Mascot mood={reactiveMood} size={54} />
               </div>
               <div className="min-w-0">
                 <h3 id="quick-expense-title" className="text-lg sm:text-xl font-extrabold font-display text-zinc-900 leading-tight truncate">
@@ -116,7 +119,7 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({ isOpen, on
             </button>
           </div>
 
-          {/* Quick Presets Carousel / Chips */}
+          {/* Quick Presets Chips */}
           <div className="mt-4">
             <span className="text-[11px] font-extrabold uppercase tracking-wider block mb-2 text-zinc-400">
               ⚡ Quick Gen Z Presets
@@ -257,17 +260,19 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({ isOpen, on
               </div>
             </div>
 
-            {/* Live Impact Card */}
-            <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 flex items-center gap-3">
-              <Mascot mood={effectiveMetrics.mascotMood} size={36} />
+            {/* Live Consequence Card with In-Place Reactive Mascot */}
+            <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 flex items-center gap-3.5">
+              <div className="shrink-0">
+                <Mascot mood={reactiveMood} size={44} />
+              </div>
               <div className="min-w-0 flex-1">
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-900 block">
-                  Consequence Preview
+                  Live Consequence & Vibe
                 </span>
                 <p className="text-xs font-bold text-zinc-800 leading-snug">
                   {type === 'expense' ? (
                     <>
-                      Deducts <span className="text-rose-700 font-extrabold">₹{numAmount}</span>. Shifts daily allowance by <span className="font-extrabold text-rose-700">−₹{projectedDailyShift}/day</span> over the next {daysLeft} days.
+                      Deducts <span className="text-rose-700 font-extrabold">₹{numAmount}</span>. Daily cap shifts by <span className="font-extrabold text-rose-700">−₹{projectedDailyShift}/day</span> over {daysLeft} remaining days.
                     </>
                   ) : (
                     <>

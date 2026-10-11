@@ -278,6 +278,7 @@ function TopDayBar({ onOpenExpenseModal }: { onOpenExpenseModal: () => void }) {
           <input
             type="text"
             placeholder="Note (e.g. Lunch)"
+            aria-label="Expense note"
             value={itemNote}
             onChange={(e) => setItemNote(e.target.value)}
             className="w-24 sm:w-28 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-white border border-black/10 focus:outline-none focus:ring-1 focus:ring-zinc-900"

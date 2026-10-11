@@ -148,10 +148,11 @@ export const ExpenseLedger: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
               <div className="sm:col-span-5">
-                <label className="text-xs font-extrabold text-zinc-700 block mb-1">
+                <label htmlFor="ledger-title" className="text-xs font-extrabold text-zinc-700 block mb-1">
                   Item Description
                 </label>
                 <input
+                  id="ledger-title"
                   type="text"
                   required
                   placeholder="e.g. Canteen lunch, Metro pass, Grocery"
@@ -162,10 +163,11 @@ export const ExpenseLedger: React.FC = () => {
               </div>
 
               <div className="sm:col-span-3">
-                <label className="text-xs font-extrabold text-zinc-700 block mb-1">
+                <label htmlFor="ledger-amount" className="text-xs font-extrabold text-zinc-700 block mb-1">
                   Amount (₹)
                 </label>
                 <input
+                  id="ledger-amount"
                   type="number"
                   required
                   min={1}
@@ -178,10 +180,11 @@ export const ExpenseLedger: React.FC = () => {
               </div>
 
               <div className="sm:col-span-4">
-                <label className="text-xs font-extrabold text-zinc-700 block mb-1">
+                <label htmlFor="ledger-category" className="text-xs font-extrabold text-zinc-700 block mb-1">
                   Category
                 </label>
                 <select
+                  id="ledger-category"
                   value={category}
                   onChange={(e) => setCategory(e.target.value as TransactionCategory)}
                   className="w-full px-3 py-2.5 rounded-xl text-xs font-extrabold bg-white border border-black/10 focus:outline-none shadow-2xs cursor-pointer"
@@ -195,10 +198,11 @@ export const ExpenseLedger: React.FC = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
               <div className="sm:col-span-6">
-                <label className="text-xs font-extrabold text-zinc-700 block mb-1">
+                <label htmlFor="ledger-type" className="text-xs font-extrabold text-zinc-700 block mb-1">
                   Type
                 </label>
                 <select
+                  id="ledger-type"
                   value={type}
                   onChange={(e) => setType(e.target.value as 'expense' | 'income')}
                   className="w-full px-3 py-2.5 rounded-xl text-xs font-extrabold bg-white border border-black/10 focus:outline-none shadow-2xs cursor-pointer"
@@ -209,10 +213,11 @@ export const ExpenseLedger: React.FC = () => {
               </div>
 
               <div className="sm:col-span-6">
-                <label className="text-xs font-extrabold text-zinc-700 block mb-1">
+                <label htmlFor="ledger-day" className="text-xs font-extrabold text-zinc-700 block mb-1">
                   Day of Month (1 - 30)
                 </label>
                 <select
+                  id="ledger-day"
                   value={transactionDay}
                   onChange={(e) => setCustomDay(Number(e.target.value))}
                   className="w-full px-3 py-2.5 rounded-xl text-xs font-extrabold bg-white border border-black/10 focus:outline-none shadow-2xs cursor-pointer"

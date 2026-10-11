@@ -149,10 +149,11 @@ export const WhatIfSimulator: React.FC = () => {
       <div className="mt-4 p-4 sm:p-5 rounded-3xl border" style={{ background: 'var(--canvas-inset)', borderColor: 'var(--border)' }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-end">
           <div className="sm:col-span-2 lg:col-span-5 min-w-0">
-            <label className="text-xs font-extrabold block mb-1.5" style={{ color: 'var(--text-1)' }}>
+            <label htmlFor="decision-title" className="text-xs font-extrabold block mb-1.5" style={{ color: 'var(--text-1)' }}>
               Decision Description
             </label>
             <input
+              id="decision-title"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -163,10 +164,11 @@ export const WhatIfSimulator: React.FC = () => {
           </div>
 
           <div className="lg:col-span-3 min-w-0">
-            <label className="text-xs font-extrabold text-zinc-700 block mb-1.5">
+            <label htmlFor="decision-amount" className="text-xs font-extrabold text-zinc-700 block mb-1.5">
               Amount (₹)
             </label>
             <input
+              id="decision-amount"
               type="number"
               min={1}
               max={10000}
@@ -179,10 +181,11 @@ export const WhatIfSimulator: React.FC = () => {
           </div>
 
           <div className="lg:col-span-2 min-w-0">
-            <label className="text-xs font-extrabold text-zinc-700 block mb-1.5">
+            <label htmlFor="decision-type" className="text-xs font-extrabold text-zinc-700 block mb-1.5">
               Type
             </label>
             <select
+              id="decision-type"
               value={type}
               onChange={(e) => setType(e.target.value as 'expense' | 'income')}
               className="w-full px-3 py-2.5 rounded-xl text-xs font-extrabold focus:outline-none cursor-pointer"
@@ -232,6 +235,7 @@ export const WhatIfSimulator: React.FC = () => {
             <span className="text-[11px] font-extrabold text-zinc-400 shrink-0">₹50</span>
             <input
               type="range"
+              aria-label="Hypothetical amount slider"
               min={50}
               max={4000}
               step={50}

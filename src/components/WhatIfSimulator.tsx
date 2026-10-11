@@ -359,7 +359,7 @@ export const WhatIfSimulator: React.FC = () => {
                   Savings Safety Net (locked)
                 </span>
                 <p className="text-xs font-bold text-zinc-600 mt-0.5">
-                  ₹{savingsLocked.toLocaleString('en-IN')} of ₹{savingsTarget.toLocaleString('en-IN')} goal ({savingsPct}%) · untouched by this decision
+                  ₹{savingsLocked.toLocaleString('en-IN')} of ₹{savingsTarget.toLocaleString('en-IN')} goal ({savingsPct}%) · {simulation.impactSummary.savingsGoalImpact}
                 </p>
               </div>
               <span className="text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 whitespace-nowrap shrink-0">

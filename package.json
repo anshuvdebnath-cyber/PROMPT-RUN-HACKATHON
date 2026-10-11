@@ -9,6 +9,9 @@
     "lint": "oxlint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:ci": "vitest run",
+    "test:coverage": "vitest run",
+    "check": "tsc --noEmit && oxlint && vitest run",
     "preview": "vite preview"
   },
   "dependencies": {

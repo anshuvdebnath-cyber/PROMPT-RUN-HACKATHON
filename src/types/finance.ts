@@ -95,6 +95,8 @@ export interface SimulationState {
     dailyAllowanceDelta: number
     scoreDelta: number
     survivalDelta: number
+    monthlyForecastDelta: number
+    savingsGoalImpact: string
     verdict: string
     riskChange: string
   } | null

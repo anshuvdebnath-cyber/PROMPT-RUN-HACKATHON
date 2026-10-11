@@ -310,6 +310,8 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         dailyAllowanceDelta: res.dailyAllowanceDelta,
         scoreDelta: res.scoreDelta,
         survivalDelta: res.survivalDelta,
+        monthlyForecastDelta: res.monthlyForecastDelta,
+        savingsGoalImpact: res.savingsGoalImpact,
         verdict: res.verdict,
         riskChange: res.riskChange,
       },

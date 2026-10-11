@@ -32,6 +32,8 @@ export interface SimulationResult {
   dailyAllowanceDelta: number
   scoreDelta: number
   survivalDelta: number
+  monthlyForecastDelta: number
+  savingsGoalImpact: string
   verdict: string
   riskChange: string
   suggestedMascotMood: FinancialHealthMetrics['mascotMood']
@@ -118,6 +120,18 @@ export function runWhatIfSimulation(req: SimulationRequest): SimulationResult {
     }
   }
 
+  const monthlyForecastDelta =
+    simulatedMetrics.projectedEndBalance - currentMetrics.projectedEndBalance
+
+  let savingsGoalImpact = 'Savings cushion safe'
+  if (simulatedBalance < req.savingsAmount) {
+    savingsGoalImpact = `Threatens ₹${req.savingsAmount} emergency savings cushion!`
+  } else if (req.proposedType === 'income') {
+    savingsGoalImpact = `Can accelerate ₹${req.savingsTarget} savings target!`
+  } else {
+    savingsGoalImpact = `₹${req.savingsAmount} savings buffer remains protected.`
+  }
+
   return {
     currentMetrics,
     simulatedMetrics,
@@ -125,6 +139,8 @@ export function runWhatIfSimulation(req: SimulationRequest): SimulationResult {
     dailyAllowanceDelta,
     scoreDelta,
     survivalDelta,
+    monthlyForecastDelta,
+    savingsGoalImpact,
     verdict,
     riskChange,
     suggestedMascotMood,

@@ -51,17 +51,17 @@ export const HealthScoreRing: React.FC<HealthScoreRingProps> = ({
   // Render segmented circular arcs
   return (
     <div
-      className="relative flex flex-col items-center justify-center p-4 bg-white/70 backdrop-blur-sm rounded-[32px] border border-black/5 shadow-sm"
-      style={{ width: size + 30 }}
+      className="relative flex flex-col items-center justify-center p-3.5 bg-white/80 backdrop-blur-md rounded-[28px] border border-black/8 shadow-xs"
+      style={{ width: size + 20 }}
       role="region"
       aria-label={`Financial Health Score: ${metrics.score} out of 100`}
     >
-      <div className="relative" style={{ width: size, height: size }}>
+      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
         <svg
           viewBox="0 0 180 180"
           width={size}
           height={size}
-          className="transform -rotate-90"
+          className="transform -rotate-90 block"
         >
           {/* Background track circle */}
           <circle
@@ -69,7 +69,7 @@ export const HealthScoreRing: React.FC<HealthScoreRingProps> = ({
             cy="90"
             r={radius}
             fill="none"
-            stroke="rgba(24, 24, 27, 0.05)"
+            stroke="rgba(24, 24, 27, 0.06)"
             strokeWidth={strokeWidth}
           />
 
@@ -86,7 +86,7 @@ export const HealthScoreRing: React.FC<HealthScoreRingProps> = ({
             strokeLinecap="round"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
-            transition={{ duration: 1, ease: 'easeOut' }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
           />
 
           {/* Segment 2: Burn discipline */}
@@ -102,7 +102,7 @@ export const HealthScoreRing: React.FC<HealthScoreRingProps> = ({
             strokeLinecap="round"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
-            transition={{ duration: 1.2, delay: 0.1, ease: 'easeOut' }}
+            transition={{ duration: 0.9, delay: 0.1, ease: 'easeOut' }}
           />
 
           {/* Segment 3: Savings */}
@@ -118,7 +118,7 @@ export const HealthScoreRing: React.FC<HealthScoreRingProps> = ({
             strokeLinecap="round"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
-            transition={{ duration: 1.4, delay: 0.2, ease: 'easeOut' }}
+            transition={{ duration: 1, delay: 0.2, ease: 'easeOut' }}
           />
 
           {/* Segment 4: Commitments */}
@@ -134,25 +134,25 @@ export const HealthScoreRing: React.FC<HealthScoreRingProps> = ({
             strokeLinecap="round"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
-            transition={{ duration: 1.6, delay: 0.3, ease: 'easeOut' }}
+            transition={{ duration: 1.1, delay: 0.3, ease: 'easeOut' }}
           />
         </svg>
 
         {/* Center Display: Score, Grade & Label */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none px-2">
           <motion.span
             key={scoreOutOfTen}
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="text-4xl font-extrabold tracking-tight font-display text-zinc-900 leading-none"
+            className="text-3xl font-extrabold tracking-tight font-display text-zinc-900 leading-none"
           >
             {scoreOutOfTen}
           </motion.span>
-          <span className="text-[11px] font-medium text-zinc-400 mt-1 uppercase tracking-wider">
+          <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-1">
             Health Score
           </span>
           <span
-            className={`text-xs font-bold px-2 py-0.5 mt-1 rounded-full ${
+            className={`text-[10px] font-extrabold px-2 py-0.5 mt-1 rounded-full ${
               metrics.score >= 80
                 ? 'bg-emerald-100 text-emerald-800'
                 : metrics.score >= 60
@@ -166,19 +166,14 @@ export const HealthScoreRing: React.FC<HealthScoreRingProps> = ({
       </div>
 
       {/* Mini Legend Indicators */}
-      <div className="flex items-center justify-center gap-1.5 mt-3 flex-wrap">
+      <div className="flex items-center justify-center gap-1 mt-2.5">
         {segments.map((seg, idx) => (
-          <div
+          <span
             key={idx}
-            className="flex items-center gap-1 text-[10px] font-semibold text-zinc-600 bg-zinc-100/70 px-2 py-0.5 rounded-full"
+            className="w-2.5 h-2.5 rounded-full inline-block shadow-2xs"
+            style={{ backgroundColor: seg.color }}
             title={seg.label}
-          >
-            <span
-              className="w-2 h-2 rounded-full inline-block"
-              style={{ backgroundColor: seg.color }}
-            />
-            <span>{seg.icon}</span>
-          </div>
+          />
         ))}
       </div>
     </div>

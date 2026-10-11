@@ -10,7 +10,7 @@ export const Navbar: React.FC = () => {
   const daysRemaining = Math.max(0, 30 - currentDay)
 
   return (
-    <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-5 pb-3">
+    <header className="w-full pt-4 pb-2">
       {/* Top Banner Row */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-black/10">
         <div>

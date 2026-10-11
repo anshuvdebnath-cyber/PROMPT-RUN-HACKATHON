@@ -63,12 +63,13 @@ export function calculateRemainingObligations(
  */
 export function calculateDynamicDailyAllowance(
   currentBalance: number,
-  totalObligations: number,
-  savingsLocked: number,
-  currentDay: number
+  totalObligations: number = 0,
+  savingsLocked: number = 0,
+  currentDay: number = 1
 ): number {
-  const daysRemaining = Math.max(1, TOTAL_MONTH_DAYS - currentDay + 1)
-  const uncommittedBuffer = currentBalance - totalObligations - savingsLocked
+  const safeDay = typeof currentDay === 'number' && !isNaN(currentDay) ? currentDay : 1
+  const daysRemaining = Math.max(1, TOTAL_MONTH_DAYS - safeDay + 1)
+  const uncommittedBuffer = (currentBalance || 0) - (totalObligations || 0) - (savingsLocked || 0)
 
   if (uncommittedBuffer <= 0) {
     return 0

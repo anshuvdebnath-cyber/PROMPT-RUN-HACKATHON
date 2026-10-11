@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sparkles, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 import { useFinance } from '../context/useFinance'
 import { Mascot } from './Mascot'
 import { MASCOT_METADATA } from '../data/mascotData'
 import { HealthScoreRing } from './HealthScoreRing'
 import { MascotMood } from '../types/finance'
 
-const MOODS_CAROUSEL: MascotMood[] = [
+const MOODS_SEQUENCE: MascotMood[] = [
   'excited',
   'joyful',
   'grateful',
@@ -20,31 +20,36 @@ export const HeroVibeBanner: React.FC = () => {
   const { effectiveMetrics, simulation } = useFinance()
   const liveMood = effectiveMetrics.mascotMood
 
-  // Initialize carousel at current live mood index
-  const initialIndex = Math.max(0, MOODS_CAROUSEL.indexOf(liveMood))
-  const [carouselIndex, setCarouselIndex] = useState(initialIndex)
+  // Start at user's current live mood
+  const initialIndex = Math.max(0, MOODS_SEQUENCE.indexOf(liveMood))
+  const [moodIndex, setMoodIndex] = useState(initialIndex)
 
-  // Sync to live mood whenever live mood changes if user hasn't actively navigated
+  // Smooth automatic mood morphing (transitions naturally on its own every 5 seconds)
   useEffect(() => {
-    const idx = MOODS_CAROUSEL.indexOf(liveMood)
+    const timer = setInterval(() => {
+      setMoodIndex((prev) => (prev + 1) % MOODS_SEQUENCE.length)
+    }, 5000)
+
+    return () => clearInterval(timer)
+  }, [])
+
+  // Sync to live mood if live mood undergoes a major shift
+  useEffect(() => {
+    const idx = MOODS_SEQUENCE.indexOf(liveMood)
     if (idx !== -1) {
       const timer = setTimeout(() => {
-        setCarouselIndex(idx)
+        setMoodIndex(idx)
       }, 0)
       return () => clearTimeout(timer)
     }
   }, [liveMood])
 
-  const activeMood = MOODS_CAROUSEL[carouselIndex] ?? 'joyful'
+  const activeMood = MOODS_SEQUENCE[moodIndex] ?? 'joyful'
   const isCurrentLive = activeMood === liveMood
   const meta = MASCOT_METADATA[activeMood] ?? MASCOT_METADATA.joyful
 
-  const handlePrevMood = () => {
-    setCarouselIndex((prev) => (prev - 1 + MOODS_CAROUSEL.length) % MOODS_CAROUSEL.length)
-  }
-
-  const handleNextMood = () => {
-    setCarouselIndex((prev) => (prev + 1) % MOODS_CAROUSEL.length)
+  const handleMascotTap = () => {
+    setMoodIndex((prev) => (prev + 1) % MOODS_SEQUENCE.length)
   }
 
   const riskStyle =
@@ -58,7 +63,7 @@ export const HeroVibeBanner: React.FC = () => {
     <section aria-label="Financial vibe status">
       <motion.div
         layout
-        className="relative overflow-hidden border transition-colors duration-500"
+        className="relative overflow-hidden border transition-colors duration-700"
         style={{
           background: meta.bg,
           borderColor: 'var(--border-soft)',
@@ -66,72 +71,32 @@ export const HeroVibeBanner: React.FC = () => {
           boxShadow: 'var(--shadow-card)',
         }}
         animate={{ backgroundColor: meta.bg }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.7 }}
       >
         <div className="dot-grid absolute inset-0 opacity-40 pointer-events-none" />
 
         <div className="relative z-10 p-4 sm:p-6 flex flex-col gap-4 md:flex-row md:items-center">
-          {/* Mascot carousel area */}
+          {/* Living mascot area - completely organic with zero carousel clutter */}
           <div className="flex md:flex-col items-center gap-2.5 shrink-0">
             {/* Squircle Mascot container */}
             <div
               className="relative w-[104px] h-[104px] sm:w-[124px] sm:h-[124px] rounded-[28px] bg-white/95 border border-black/5 flex items-center justify-center overflow-hidden cursor-pointer group shadow-xs"
-              onClick={handleNextMood}
-              title="Click to advance to next mood in carousel"
+              onClick={handleMascotTap}
+              title="Living mascot — tap to cycle expression"
             >
               <div className="absolute inset-0 dot-grid opacity-60" />
               <Mascot mood={activeMood} size={92} className="relative group-hover:scale-105 transition-transform" />
             </div>
 
-            {/* Carousel navigation bar: Prev < Current Mood in between > Next */}
-            <div className="flex flex-col items-center gap-1.5">
-              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/95 border border-black/8 shadow-2xs">
-                <button
-                  onClick={handlePrevMood}
-                  className="w-6 h-6 rounded-full hover:bg-black/6 flex items-center justify-center text-zinc-600 hover:text-black cursor-pointer transition-transform hover:scale-110 active:scale-95"
-                  title="Previous mood"
-                  aria-label="Previous mood"
-                >
-                  <ChevronLeft size={14} />
-                </button>
-
-                {/* Current Mood shown in between */}
-                <div className="flex items-center gap-1.5 px-1.5 text-[11.5px] font-black text-zinc-800">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: meta.color }} />
-                  <span className="capitalize">{meta.label}</span>
-                  {isCurrentLive && (
-                    <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 font-extrabold uppercase tracking-wide">
-                      Live
-                    </span>
-                  )}
-                </div>
-
-                <button
-                  onClick={handleNextMood}
-                  className="w-6 h-6 rounded-full hover:bg-black/6 flex items-center justify-center text-zinc-600 hover:text-black cursor-pointer transition-transform hover:scale-110 active:scale-95"
-                  title="Next mood"
-                  aria-label="Next mood"
-                >
-                  <ChevronRight size={14} />
-                </button>
-              </div>
-
-              {/* Carousel Indicator Dots */}
-              <div className="flex items-center gap-1">
-                {MOODS_CAROUSEL.map((m, idx) => (
-                  <button
-                    key={m}
-                    onClick={() => setCarouselIndex(idx)}
-                    className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                      idx === carouselIndex
-                        ? 'w-4 bg-zinc-800'
-                        : 'w-1.5 bg-black/15 hover:bg-black/30'
-                    }`}
-                    title={`Go to ${m}`}
-                    aria-label={`Go to ${m}`}
-                  />
-                ))}
-              </div>
+            {/* Seamless current mood indicator */}
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 border border-black/8 shadow-2xs text-[11.5px] font-black text-zinc-800">
+              <span className="w-2 h-2 rounded-full shrink-0 animate-pulse" style={{ background: meta.color }} />
+              <span className="capitalize">{meta.label}</span>
+              {isCurrentLive && (
+                <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 font-extrabold uppercase tracking-wide">
+                  Live
+                </span>
+              )}
             </div>
           </div>
 
@@ -158,7 +123,7 @@ export const HeroVibeBanner: React.FC = () => {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.25 }}
+                transition={{ duration: 0.35 }}
                 className="font-display font-black text-balance leading-[1.08] text-zinc-900"
                 style={{ fontSize: 'clamp(1.5rem, 4.5vw, 2.2rem)' }}
               >
@@ -172,7 +137,7 @@ export const HeroVibeBanner: React.FC = () => {
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.25 }}
+                transition={{ duration: 0.35 }}
                 className="mt-2.5 inline-flex items-start gap-2.5 px-4 py-3 rounded-2xl bg-white/95 border border-black/5 text-left w-full md:max-w-[560px] shadow-xs"
               >
                 <span className="shrink-0 text-base">💡</span>

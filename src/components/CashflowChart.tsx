@@ -1,3 +1,4 @@
+import React from 'react'
 import { useFinance } from '../context/useFinance'
 
 export const CashflowChart: React.FC = () => {
@@ -31,9 +32,9 @@ export const CashflowChart: React.FC = () => {
 
   // SVG coordinates mapping (width 600, height 180)
   const svgWidth = 600
-  const svgHeight = 160
-  const paddingX = 30
-  const paddingY = 20
+  const svgHeight = 170
+  const paddingX = 35
+  const paddingY = 25
 
   const getX = (day: number) =>
     paddingX + ((day - 1) / 29) * (svgWidth - 2 * paddingX)
@@ -59,157 +60,144 @@ export const CashflowChart: React.FC = () => {
   const currentPoint = points[currentDay - 1] || points[0]
 
   return (
-    <div className="neo-card p-6 bg-white border border-black/10">
-      <div className="flex items-center justify-between pb-3 border-b border-black/5">
+    <div className="card-premium p-6 sm:p-8 bg-white border border-black/8 shadow-card">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 border-b border-black/8">
         <div>
-          <h3 className="text-xl font-bold font-display text-zinc-900">
+          <h3 className="text-xl sm:text-2xl font-extrabold font-display text-zinc-900">
             30-Day Runway Forecast
           </h3>
-          <p className="text-xs text-zinc-500">
-            Past burn trajectory vs. projected end-of-month runway.
+          <p className="text-xs sm:text-sm text-zinc-500 font-medium">
+            Past burn trajectory vs. projected end-of-month cash runway.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1 text-[11px] font-bold text-zinc-500">
-            <span className="w-2.5 h-2.5 rounded-full bg-pink-500 inline-block" />
-            Wallet Curve
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1.5 text-xs font-bold text-zinc-600">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+            Wallet Runway
           </span>
-          <span className="flex items-center gap-1 text-[11px] font-bold text-zinc-500 ml-2">
+          <span className="flex items-center gap-1.5 text-xs font-bold text-zinc-600">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block" />
-            Day {currentDay} Pin
+            Day {currentDay} Position
           </span>
         </div>
       </div>
 
-      {/* SVG Wavy Chart with Hatched Pattern */}
-      <div className="relative mt-4 w-full overflow-hidden rounded-2xl bg-[#FAF7F2] p-2 border border-black/5">
+      {/* SVG Wavy Chart with Soft Gradient */}
+      <div className="relative mt-5 w-full overflow-hidden rounded-[24px] bg-[#FAF7F2] p-4 border border-black/6">
         <svg
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          className="w-full h-44 sm:h-52 overflow-visible"
+          className="w-full h-48 sm:h-56 overflow-visible"
         >
-          {/* Hatched striped deficit danger band at bottom */}
-          <rect
-            x={paddingX}
-            y={getY(1500)}
-            width={svgWidth - 2 * paddingX}
-            height={getY(0) - getY(1500)}
-            fill="rgba(239, 68, 68, 0.05)"
-            strokeDasharray="4 4"
-          />
+          <defs>
+            <linearGradient id="curveGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#FB7185" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#FB7185" stopOpacity="0.0" />
+            </linearGradient>
+          </defs>
 
           {/* ₹0 Base Axis Line */}
           <line
             x1={paddingX}
-            y1={svgHeight - paddingY}
+            y1={getY(0)}
             x2={svgWidth - paddingX}
-            y2={svgHeight - paddingY}
-            stroke="rgba(24, 24, 27, 0.15)"
+            y2={getY(0)}
+            stroke="#D4D4D8"
             strokeWidth="1.5"
           />
 
-          {/* ₹5,000 Midline */}
-          <line
-            x1={paddingX}
-            y1={getY(5000)}
-            x2={svgWidth - paddingX}
-            y2={getY(5000)}
-            stroke="rgba(24, 24, 27, 0.07)"
-            strokeDasharray="3 3"
-            strokeWidth="1"
-          />
-          <text
-            x={paddingX + 4}
-            y={getY(5000) - 4}
-            className="text-[9px] fill-zinc-400 font-semibold"
-          >
-            ₹5k Midpoint
-          </text>
+          {/* Area fill under curve */}
+          <path d={areaPath} fill="url(#curveGradient)" />
 
-          {/* Area Fill */}
-          <path d={areaPath} fill="rgba(244, 114, 182, 0.12)" />
-
-          {/* Smooth Curve */}
+          {/* Primary Wave Runway Line */}
           <path
             d={pathD}
             fill="none"
-            stroke="#EC4899"
+            stroke="#E11D48"
             strokeWidth="3.5"
             strokeLinecap="round"
           />
 
-          {/* Current Day Vertical Indicator Line */}
-          <line
-            x1={getX(currentDay)}
-            y1={paddingY}
-            x2={getX(currentDay)}
-            y2={svgHeight - paddingY}
-            stroke="#18181B"
-            strokeWidth="2"
-            strokeDasharray="4 3"
-          />
-
-          {/* Current Day Pin Marker */}
-          <circle
-            cx={getX(currentDay)}
-            cy={getY(currentPoint.balance)}
-            r="6.5"
-            fill="#F59E0B"
-            stroke="#FFFFFF"
-            strokeWidth="2.5"
-            className="drop-shadow-sm"
-          />
-
-          {/* Data Badge above current day */}
-          <g
-            transform={`translate(${Math.min(
-              svgWidth - 90,
-              Math.max(30, getX(currentDay) - 40)
-            )}, ${Math.max(15, getY(currentPoint.balance) - 34)})`}
-          >
-            <rect
-              width="80"
-              height="22"
-              rx="8"
-              fill="#18181B"
-              className="drop-shadow-md"
+          {/* Current Day Indicator Pin */}
+          <g>
+            <line
+              x1={getX(currentPoint.day)}
+              y1={paddingY}
+              x2={getX(currentPoint.day)}
+              y2={getY(0)}
+              stroke="#F59E0B"
+              strokeWidth="2"
+              strokeDasharray="4 4"
             />
-            <text
-              x="40"
-              y="15"
-              fill="#FFFFFF"
-              textAnchor="middle"
-              className="text-[10px] font-bold"
-            >
-              Day {currentDay}: ₹{currentPoint.balance}
-            </text>
+            <circle
+              cx={getX(currentPoint.day)}
+              cy={getY(currentPoint.balance)}
+              r="7"
+              fill="#F59E0B"
+              stroke="#FFFFFF"
+              strokeWidth="2.5"
+            />
           </g>
 
-          {/* Milestone Day Markers along x-axis */}
-          {[1, 5, 10, 15, 20, 25, 30].map((d) => (
-            <text
-              key={d}
-              x={getX(d)}
-              y={svgHeight - 4}
-              textAnchor="middle"
-              className="text-[10px] font-bold fill-zinc-400"
-            >
-              D{d}
-            </text>
-          ))}
+          {/* Day markers */}
+          <text
+            x={getX(1)}
+            y={svgHeight - 6}
+            fontSize="10"
+            fontWeight="bold"
+            fill="#A1A1AA"
+            textAnchor="middle"
+          >
+            Day 1
+          </text>
+          <text
+            x={getX(15)}
+            y={svgHeight - 6}
+            fontSize="10"
+            fontWeight="bold"
+            fill="#A1A1AA"
+            textAnchor="middle"
+          >
+            Day 15
+          </text>
+          <text
+            x={getX(30)}
+            y={svgHeight - 6}
+            fontSize="10"
+            fontWeight="bold"
+            fill="#A1A1AA"
+            textAnchor="middle"
+          >
+            Day 30
+          </text>
         </svg>
       </div>
 
-      <div className="mt-3 flex items-center justify-between text-xs text-zinc-500 font-medium">
-        <span>Starting ₹10,000 on Day 1</span>
-        <span
-          className={`font-bold ${
-            effectiveMetrics.projectedEndBalance >= 0
-              ? 'text-emerald-700'
-              : 'text-rose-700'
-          }`}
-        >
-          Forecast on Day 30: ₹{effectiveMetrics.projectedEndBalance}
-        </span>
+      {/* Summary Footer */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mt-5">
+        <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-black/5">
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 block">
+            Current Day Burn
+          </span>
+          <span className="text-lg font-extrabold text-zinc-900 font-display block mt-0.5">
+            ₹{effectiveMetrics.burnRateDaily}/day
+          </span>
+        </div>
+        <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-black/5">
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 block">
+            Projected End Balance
+          </span>
+          <span className={`text-lg font-extrabold font-display block mt-0.5 ${effectiveMetrics.projectedEndBalance >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
+            ₹{effectiveMetrics.projectedEndBalance.toLocaleString('en-IN')}
+          </span>
+        </div>
+        <div className="p-4 rounded-2xl bg-[#FAF7F2] border border-black/5">
+          <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 block">
+            Survival Odds
+          </span>
+          <span className="text-lg font-extrabold text-zinc-900 font-display block mt-0.5">
+            {effectiveMetrics.survivalProbability}% ({effectiveMetrics.riskLevel})
+          </span>
+        </div>
       </div>
     </div>
   )

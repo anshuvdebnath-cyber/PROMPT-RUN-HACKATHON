@@ -32,9 +32,9 @@ export const HeroVibeBanner: React.FC = () => {
   ]
 
   return (
-    <section className="w-full my-4" aria-label="Hero financial vibe status">
+    <section className="w-full my-5" aria-label="Hero financial vibe status">
       <div
-        className="relative overflow-hidden rounded-[30px] p-6 sm:p-7 border border-black/8 shadow-xs transition-colors duration-500"
+        className="relative overflow-hidden rounded-[32px] p-6 sm:p-8 border border-black/8 shadow-card transition-colors duration-500"
         style={{
           backgroundColor: activeMeta.bg,
         }}
@@ -42,19 +42,19 @@ export const HeroVibeBanner: React.FC = () => {
         {/* Subtle patterned accent background */}
         <div className="absolute inset-0 hatched-pattern opacity-25 pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8">
           {/* Left Column: Mascot & Emotional State */}
-          <div className="flex items-center text-left gap-5 flex-1 min-w-0">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5 flex-1 min-w-0">
             <div className="relative shrink-0 group">
               <Mascot
                 mood={activeMood}
-                size={95}
+                size={105}
                 className="cursor-pointer transition-transform hover:scale-105"
                 onClick={() => setShowMascotGallery(true)}
               />
               <button
                 onClick={() => setShowMascotGallery(true)}
-                className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-white/95 text-zinc-900 border border-black/10 shadow-xs hover:bg-zinc-100 flex items-center gap-1 whitespace-nowrap cursor-pointer"
+                className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-white text-zinc-900 border border-black/10 shadow-xs hover:bg-zinc-100 flex items-center gap-1 whitespace-nowrap cursor-pointer"
                 title="Explore all 12 mood expressions"
               >
                 <Grid size={11} />
@@ -63,8 +63,8 @@ export const HeroVibeBanner: React.FC = () => {
             </div>
 
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                <span className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-white/95 text-zinc-900 border border-black/8 shadow-2xs flex items-center gap-1.5">
+              <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap mb-2">
+                <span className="px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-white text-zinc-900 border border-black/8 shadow-2xs flex items-center gap-1.5">
                   <span
                     className="w-2.5 h-2.5 rounded-full"
                     style={{ backgroundColor: activeMeta.color }}
@@ -73,7 +73,7 @@ export const HeroVibeBanner: React.FC = () => {
                 </span>
 
                 <span
-                  className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border shadow-2xs ${
+                  className={`px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider border shadow-2xs ${
                     effectiveMetrics.riskLevel === 'Safe'
                       ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
                       : effectiveMetrics.riskLevel === 'Moderate'
@@ -81,24 +81,26 @@ export const HeroVibeBanner: React.FC = () => {
                       : 'bg-rose-100 text-rose-800 border-rose-300'
                   }`}
                 >
-                  {effectiveMetrics.riskLevel}
+                  {effectiveMetrics.riskLevel} Risk
                 </span>
 
                 {simulation.isActive && (
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-amber-300 text-amber-950 border border-amber-400 flex items-center gap-1">
+                  <span className="px-3 py-1 rounded-full text-[10px] font-extrabold bg-amber-300 text-amber-950 border border-amber-400 flex items-center gap-1">
                     <Sparkles size={11} />
                     Simulation Active
                   </span>
                 )}
               </div>
 
-              <h2 className="text-xl sm:text-2xl font-extrabold text-zinc-900 font-display tracking-tight leading-snug">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-zinc-900 font-display tracking-tight leading-snug">
                 {activeMeta.vibe}
               </h2>
 
-              <p className="text-xs sm:text-sm text-zinc-700 mt-2 font-medium leading-relaxed bg-white/80 backdrop-blur-xs px-3.5 py-2 rounded-2xl border border-black/5 inline-block">
-                💡 <span className="font-bold">Fin-Vibe:</span> {effectiveMetrics.quip}
-              </p>
+              <div className="mt-2.5">
+                <p className="text-xs sm:text-sm text-zinc-700 font-medium leading-relaxed bg-white/90 backdrop-blur-xs px-4 py-2.5 rounded-2xl border border-black/6 inline-block shadow-2xs">
+                  💡 <span className="font-extrabold text-zinc-900">Fin-Vibe Check:</span> {effectiveMetrics.quip}
+                </p>
+              </div>
 
               {previewMood && (
                 <button
@@ -113,7 +115,7 @@ export const HeroVibeBanner: React.FC = () => {
 
           {/* Right Column: Health Score Ring widget */}
           <div className="shrink-0 flex items-center justify-center">
-            <HealthScoreRing metrics={effectiveMetrics} size={135} />
+            <HealthScoreRing metrics={effectiveMetrics} size={145} />
           </div>
         </div>
       </div>

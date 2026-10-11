@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Zap, AlertTriangle, Gift, Dice5, Check } from 'lucide-react'
+import { Zap, Dice5, X } from 'lucide-react'
 import { useFinance } from '../context/useFinance'
 import { RANDOM_SURPRISE_EVENTS } from '../data/mockData'
 import { UnexpectedEvent } from '../types/finance'
@@ -10,7 +10,6 @@ export const SurpriseEvents: React.FC = () => {
   const [activeEvent, setActiveEvent] = useState<UnexpectedEvent | null>(null)
 
   const handleRollDice = () => {
-    // Pick random event
     const randomIndex = Math.floor(Math.random() * RANDOM_SURPRISE_EVENTS.length)
     const event = RANDOM_SURPRISE_EVENTS[randomIndex]
     setActiveEvent(event)
@@ -23,68 +22,68 @@ export const SurpriseEvents: React.FC = () => {
   }
 
   return (
-    <div className="neo-card p-6 bg-white border border-black/10">
-      <div className="flex items-center justify-between pb-3 border-b border-black/5">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-800 flex items-center justify-center font-bold">
-            <Zap size={18} />
+    <div className="card-premium p-6 sm:p-7 bg-white border border-black/8 shadow-card flex flex-col justify-between h-full">
+      <div>
+        <div className="flex items-center justify-between pb-4 border-b border-black/8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-rose-100 text-rose-800 flex items-center justify-center font-bold shadow-2xs">
+              <Zap size={20} />
+            </div>
+            <div>
+              <h3 className="text-xl font-extrabold font-display text-zinc-900">
+                Life Happens: Surprise Events
+              </h3>
+              <p className="text-xs text-zinc-500 font-medium">
+                Test your resilience against random curveballs.
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-lg font-bold font-display text-zinc-900">
-              Life Happens: Surprise Events
-            </h3>
-            <p className="text-xs text-zinc-500">
-              Test your financial resilience against random real-world curveballs.
-            </p>
-          </div>
+
+          <button
+            onClick={handleRollDice}
+            className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-extrabold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
+          >
+            <Dice5 size={14} className="text-amber-400" />
+            <span>Draw Event</span>
+          </button>
         </div>
 
-        <button
-          onClick={handleRollDice}
-          className="px-3.5 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
-        >
-          <Dice5 size={14} />
-          <span>Draw Random Event</span>
-        </button>
-      </div>
-
-      {/* Preset Events Row */}
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-        {RANDOM_SURPRISE_EVENTS.slice(0, 3).map((ev) => (
-          <div
-            key={ev.id}
-            className={`p-3 rounded-2xl border text-left flex flex-col justify-between ${
-              ev.amount < 0
-                ? 'bg-rose-50/60 border-rose-200'
-                : 'bg-emerald-50/60 border-emerald-200'
-            }`}
-          >
-            <div>
+        {/* Preset Events Row */}
+        <div className="mt-5 space-y-3">
+          {RANDOM_SURPRISE_EVENTS.slice(0, 3).map((ev) => (
+            <div
+              key={ev.id}
+              className={`p-3.5 rounded-2xl border text-left flex flex-col justify-between ${
+                ev.amount < 0
+                  ? 'bg-rose-50/70 border-rose-200'
+                  : 'bg-emerald-50/70 border-emerald-200'
+              }`}
+            >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-zinc-900 truncate">
+                <span className="text-xs font-extrabold text-zinc-900 truncate">
                   {ev.title}
                 </span>
                 <span
-                  className={`text-xs font-extrabold ${
+                  className={`text-xs font-extrabold font-display ${
                     ev.amount < 0 ? 'text-rose-700' : 'text-emerald-700'
                   }`}
                 >
                   {ev.amount < 0 ? '-' : '+'}₹{Math.abs(ev.amount)}
                 </span>
               </div>
-              <p className="text-[11px] text-zinc-600 line-clamp-2 mt-1">
+              <p className="text-[11px] text-zinc-600 line-clamp-2 mt-1 font-medium">
                 {ev.description}
               </p>
-            </div>
 
-            <button
-              onClick={() => triggerSurpriseEvent(ev)}
-              className="mt-2.5 w-full py-1 text-[10px] font-bold rounded-lg bg-white/90 hover:bg-white text-zinc-800 border border-black/10 transition-all text-center"
-            >
-              Trigger This Event
-            </button>
-          </div>
-        ))}
+              <button
+                onClick={() => triggerSurpriseEvent(ev)}
+                className="mt-3 w-full py-1.5 text-[11px] font-extrabold rounded-xl bg-white hover:bg-zinc-50 text-zinc-800 border border-black/10 transition-all text-center cursor-pointer shadow-2xs"
+              >
+                Trigger This Event
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Rolled Event Modal / Overlay */}
@@ -95,56 +94,56 @@ export const SurpriseEvents: React.FC = () => {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-[32px] p-6 max-w-md w-full border-2 border-black/10 shadow-2xl"
+              className="bg-white rounded-[32px] p-6 max-w-md w-full border border-black/10 shadow-2xl"
             >
-              <div className="flex items-center gap-2 mb-2">
-                {activeEvent.amount < 0 ? (
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 flex items-center gap-1">
-                    <AlertTriangle size={11} /> Unexpected Expense Shock
-                  </span>
-                ) : (
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 flex items-center gap-1">
-                    <Gift size={11} /> Sudden Cash Windfall
-                  </span>
-                )}
-              </div>
-
-              <h4 className="text-xl font-extrabold font-display text-zinc-900">
-                {activeEvent.title}
-              </h4>
-
-              <div className="my-3 p-3 rounded-2xl bg-zinc-50 border border-black/5 text-sm text-zinc-700 font-medium">
-                {activeEvent.description}
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-2xl bg-zinc-100/70">
-                <span className="text-xs font-bold text-zinc-500">Financial Impact:</span>
-                <span
-                  className={`text-lg font-black font-display ${
-                    activeEvent.amount < 0 ? 'text-rose-600' : 'text-emerald-600'
-                  }`}
-                >
-                  {activeEvent.amount < 0 ? '-' : '+'}₹{Math.abs(activeEvent.amount)}
-                </span>
-              </div>
-
-              <p className="mt-2 text-xs text-zinc-500 italic">
-                {activeEvent.consequenceText}
-              </p>
-
-              <div className="flex items-center justify-end gap-2 mt-5">
+              <div className="flex items-center justify-between pb-3 border-b border-black/8">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">{activeEvent.amount < 0 ? '💥' : '🎉'}</span>
+                  <h4 className="text-lg font-extrabold font-display text-zinc-900">
+                    Curveball Drawn!
+                  </h4>
+                </div>
                 <button
                   onClick={() => setActiveEvent(null)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-zinc-600 bg-zinc-100 hover:bg-zinc-200"
+                  className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-700 font-bold flex items-center justify-center cursor-pointer"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="my-5 p-4 rounded-2xl bg-[#FAF7F2] border border-black/6">
+                <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider block">
+                  {activeEvent.category}
+                </span>
+                <h5 className="text-base font-extrabold text-zinc-900 mt-1">
+                  {activeEvent.title}
+                </h5>
+                <p className="text-xs text-zinc-600 mt-1.5 font-medium leading-relaxed">
+                  {activeEvent.description}
+                </p>
+                <div className="mt-3">
+                  <span
+                    className={`text-xl font-extrabold font-display ${
+                      activeEvent.amount < 0 ? 'text-rose-600' : 'text-emerald-600'
+                    }`}
+                  >
+                    {activeEvent.amount < 0 ? '-' : '+'}₹{Math.abs(activeEvent.amount)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-2">
+                <button
+                  onClick={() => setActiveEvent(null)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-zinc-600 hover:bg-zinc-100 cursor-pointer"
                 >
                   Skip
                 </button>
                 <button
                   onClick={handleApplyEvent}
-                  className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-zinc-900 hover:bg-zinc-800 flex items-center gap-1"
+                  className="px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-extrabold shadow-sm cursor-pointer"
                 >
-                  <Check size={14} />
-                  <span>Apply to Wallet</span>
+                  Apply Impact to Budget
                 </button>
               </div>
             </motion.div>
